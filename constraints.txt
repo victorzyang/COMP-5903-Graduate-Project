@@ -1,0 +1,7 @@
+@generateTable
+@INEQ x < 0
+@INEQ 0 <= x <= 3
+@INEQ 3 < x <= 5
+@INEQ 5 < x <= 8
+@INEQ x > 8
+@INEQ x > 70
