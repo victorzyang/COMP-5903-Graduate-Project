@@ -10,11 +10,20 @@ import java.util.Scanner;
 
 public class Parser {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter input file path: ");
+        String inputFilePath = scanner.next();
+
+        System.out.println("Enter output file path: ");
+        String outputFilePath = scanner.next();
+
         String stringToBeWritten = "";
         int numOfTestCases = 0;
 
         try {
-            File myObj = new File("src/test/java/generateExampleTables.feature"/*"constraints.txt"*/);
+            File myObj = new File(inputFilePath);
+            //File myObj = new File("src/test/java/generateExampleTables.feature"/*"constraints.txt"*/);
             Scanner myReader = new Scanner(myObj); //Maybe use FileReader instead of Scanner (?)
             //FileWriter myWriter = new FileWriter("src/test/java/generateExampleTables.feature");
             //TODO: need to write to NEW file?
@@ -256,7 +265,8 @@ public class Parser {
 
             myReader.close();
 
-            FileWriter myWriter = new FileWriter("src/test/java/generateExampleTablesCopy.feature");
+            //FileWriter myWriter = new FileWriter("src/test/java/generateExampleTablesCopy.feature");
+            FileWriter myWriter = new FileWriter(outputFilePath);
             myWriter.write(stringToBeWritten);
             myWriter.close();
 
