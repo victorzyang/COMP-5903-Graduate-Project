@@ -4,6 +4,7 @@ import java.io.File;  // Import the File class
 import java.io.FileNotFoundException;  // Import this class to handle errors
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -41,6 +42,9 @@ public class Parser {
 
             ArrayList<ArrayList<Integer>> listOfTestData = null;
 
+            boolean[] is_table_column_value_constrained = null;
+            ArrayList<int[]> listOfConstraints = null;
+
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 String[] arrOfStr = data.trim().split(" ");
@@ -70,6 +74,8 @@ public class Parser {
                     is_table_column_value_fixed = new boolean[num_of_table_columns];
                     listOfFixedValues = new int[num_of_table_columns];
                     listOfTestData = new ArrayList<ArrayList<Integer>>(num_of_table_columns);
+                    is_table_column_value_constrained = new boolean[num_of_table_columns];
+                    listOfConstraints = new ArrayList<int[]>(num_of_table_columns);
 
                     System.out.println("Checking all elements in table_column_values arraylist");
                     for (int i = 1; i < arrOfStr.length; i++) {
@@ -77,6 +83,7 @@ public class Parser {
                             System.out.println("arrOfStr at index " + i + " is: " + arrOfStr[i]);
                             table_column_values.add(arrOfStr[i]);
                             listOfTestData.add(new ArrayList<Integer>());
+                            listOfConstraints.add(new int[2]);
                         }
                     }
 
@@ -85,6 +92,7 @@ public class Parser {
                     for (int i = 0; i < is_table_column_value_fixed.length; i++) {
                         is_table_column_value_fixed[i] = false;
                         listOfFixedValues[i] = 0;
+                        is_table_column_value_constrained[i] = false;
                     }
                 } else if (arrOfStr[0].equals("@RANDOM")) {
                     if (arrOfStr[2].equals("BETWEEN")) {
@@ -105,6 +113,41 @@ public class Parser {
                         }
 
                     }
+                } else if (arrOfStr[0].equals("@Constraint")) {
+
+                    String firstStringAfterAnnotation = arrOfStr[1];
+                    String tableColumnName = firstStringAfterAnnotation.replace("(", "");
+
+                    String thirdStringAfterAnnotation = arrOfStr[3];
+                    int int1 = Integer.parseInt(thirdStringAfterAnnotation.replace(")", ""));
+
+                    String lastString = arrOfStr[7];
+                    int int2 = Integer.parseInt(lastString.replace(")", ""));
+
+                    String symbol1 = arrOfStr[2];
+
+                    String symbol2 = arrOfStr[6];
+
+                    for (int i = 0; i < table_column_values.size(); i++) {
+                        if (table_column_values.get(i).equals(tableColumnName)) {
+                            is_table_column_value_constrained[i] = true;
+
+                            if (symbol1.equals(">=")) {
+                                listOfConstraints.get(i)[0] = int1;
+                            }
+
+                            if (symbol2.equals("<=")) {
+                                listOfConstraints.get(i)[1] = int2;
+                            }
+
+                        }
+                    }
+
+                    /*for (int i = 0; i < listOfConstraints.size(); i++) {
+                        System.out.println("listOfConstraints[i][0]: " + listOfConstraints.get(i)[0]);
+                        System.out.println("listOfConstraints[i][1]: " + listOfConstraints.get(i)[1]);
+                    }*/
+
                 } else if (arrOfStr[0].equals("@BVA")) {
                     generateAtBoundaryValues = true;
                 } else if (arrOfStr[0].equals("@IF")) {
@@ -142,8 +185,14 @@ public class Parser {
                                     listOfTestData.get(i).add((int) (Math.random() * (Integer.parseInt(boundaryString) - 1)));
                                 } else if (arrOfStr[2].equals(">=")) {
                                     Random random = new Random();
-                                    int number = Math.abs(random.nextInt());
-                                    listOfTestData.get(i).add(number + Integer.parseInt(boundaryString));
+                                    if (is_table_column_value_constrained[i]) {
+                                        int boundaryInt = Integer.parseInt(boundaryString);
+                                        int number = random.nextInt(listOfConstraints.get(i)[1] - boundaryInt) + boundaryInt;
+                                        listOfTestData.get(i).add(number);
+                                    } else {
+                                        int number = Math.abs(random.nextInt());
+                                        listOfTestData.get(i).add(number + Integer.parseInt(boundaryString));
+                                    }
                                 }
 
                                 break;

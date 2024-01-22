@@ -3,6 +3,7 @@ Feature: Test Equivalence Partitioning example
 
   @Table | years | salary | bonus |
   @RANDOM salary BETWEEN 10000 AND 100000
+  @Constraint (years >= 0) & (years <= 100)
   @BVA
   @IF (years < 3) THEN bonus = 0
   @IF ((years >= 3) & (years <5)) THEN bonus = salary * 0.5
@@ -14,10 +15,10 @@ Feature: Test Equivalence Partitioning example
     Then Christmas bonus is <bonus>
     Examples:
       | years | salary | bonus |
-      | 0 | 22135 | 0 |
-      | 3 | 22135 | 11067 |
-      | 4 | 22135 | 11067 |
-      | 5 | 22135 | 17708 |
-      | 6 | 22135 | 17708 |
-      | 7 | 22135 | 17708 |
-      | 108170190 | 22135 | 22135 |
+      | 1 | 68717 | 0 |
+      | 3 | 68717 | 34358 |
+      | 4 | 68717 | 34358 |
+      | 5 | 68717 | 54973 |
+      | 6 | 68717 | 54973 |
+      | 7 | 68717 | 54973 |
+      | 90 | 68717 | 68717 |
