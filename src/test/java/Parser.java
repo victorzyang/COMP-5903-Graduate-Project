@@ -24,9 +24,9 @@ public class Parser {
 
         try {
             File myObj = new File(inputFilePath);
-            //File myObj = new File("src/test/java/generateExampleTables.feature"/*"constraints.txt"*/);
+            //File myObj = new File("src/test/java/generateEquivalencePartitioning.feature"/*"constraints.txt"*/);
             Scanner myReader = new Scanner(myObj); //Maybe use FileReader instead of Scanner (?)
-            //FileWriter myWriter = new FileWriter("src/test/java/generateExampleTables.feature");
+            //FileWriter myWriter = new FileWriter("src/test/java/generateEquivalencePartitioning.feature");
             //TODO: need to write to NEW file?
 
             //TODO: have a boolean variable that checks if we're currently on a scenario
@@ -314,7 +314,7 @@ public class Parser {
 
             myReader.close();
 
-            //FileWriter myWriter = new FileWriter("src/test/java/generateExampleTablesCopy.feature");
+            //FileWriter myWriter = new FileWriter("src/test/java/generateEquivalencePartitioningCopy.feature");
             FileWriter myWriter = new FileWriter(outputFilePath);
             myWriter.write(stringToBeWritten);
             myWriter.close();
