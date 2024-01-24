@@ -27,7 +27,6 @@ public class Parser {
             //File myObj = new File("src/test/java/generateEquivalencePartitioning.feature"/*"constraints.txt"*/);
             Scanner myReader = new Scanner(myObj); //Maybe use FileReader instead of Scanner (?)
             //FileWriter myWriter = new FileWriter("src/test/java/generateEquivalencePartitioning.feature");
-            //TODO: need to write to NEW file?
 
             //TODO: have a boolean variable that checks if we're currently on a scenario
             boolean checking_scenario_outline = false;
@@ -37,6 +36,11 @@ public class Parser {
             int[] listOfFixedValues = null;
 
             String table_string = "      ";
+
+            //TODO: have 2D ArrayList that keeps track of labels
+            ArrayList<String> label_names = null;
+            ArrayList<ArrayList<String>> label_conditions = null;
+            boolean currentlyCheckingLabel = false;
 
             boolean generateAtBoundaryValues = false;
 
@@ -51,6 +55,8 @@ public class Parser {
 
                 stringToBeWritten += data;
                 stringToBeWritten += "\n";
+
+                System.out.println("Size of arrOfStr is: " + arrOfStr.length);
 
                 if (arrOfStr[0].equals("@Table")) {
                     checking_scenario_outline = true;
@@ -73,6 +79,8 @@ public class Parser {
 
                     is_table_column_value_fixed = new boolean[num_of_table_columns];
                     listOfFixedValues = new int[num_of_table_columns];
+                    label_names = new ArrayList<String>();
+                    label_conditions = new ArrayList<ArrayList<String>>();
                     listOfTestData = new ArrayList<ArrayList<Integer>>(num_of_table_columns);
                     is_table_column_value_constrained = new boolean[num_of_table_columns];
                     listOfConstraints = new ArrayList<int[]>(num_of_table_columns);
@@ -94,6 +102,28 @@ public class Parser {
                         listOfFixedValues[i] = 0;
                         is_table_column_value_constrained[i] = false;
                     }
+                } else if (arrOfStr[0].equals("@LABEL")) {
+                    System.out.println("At @LABEL tag");
+                    String current_label_name = arrOfStr[1];
+                    System.out.println("current_label_name is: " + current_label_name);
+                    label_names.add(current_label_name);
+                    label_conditions.add(new ArrayList<String>());
+                    //labels.get(labels.size() - 1).add(current_label_name);
+                    currentlyCheckingLabel = true;
+                } else if (arrOfStr[0].equals("@END_LABEL")) {
+                    System.out.println("Checking label_names");
+                    for (int i = 0; i < label_names.size(); i++) {
+                        System.out.println("label_names at index " + i + " is: " + label_names.get(i));
+                    }
+
+                    System.out.println("\nChecking label_conditions");
+                    for (int i = 0; i < label_conditions.size(); i++) {
+                        for (int j = 0; j < label_conditions.get(i).size(); j++) {
+                            System.out.println("label_conditions at index [" + i + "][" + j + "] is: " + label_conditions.get(i).get(j));
+                        }
+                    }
+
+                    currentlyCheckingLabel = false;
                 } else if (arrOfStr[0].equals("@RANDOM")) {
                     if (arrOfStr[2].equals("BETWEEN")) {
                         int random_int;
@@ -153,108 +183,138 @@ public class Parser {
                 } else if (arrOfStr[0].equals("@IF")) {
                     //System.out.println("generateAtBoundaryValues is " + generateAtBoundaryValues);
 
-                    int arrOfStrLengthFromIfToThen = 0;
+                    if (currentlyCheckingLabel) {
 
-                    for (int i = 1; i < arrOfStr.length; i++) {
-                        if (arrOfStr[i].equals("THEN")) {
-                            break;
-                        } else {
-                            arrOfStrLengthFromIfToThen++;
-                        }
-                    }
+                        //int indexOfThen;
+                        String conditionString = "";
 
-                    //System.out.println("arrOfStrLengthFromIfToThen is " + arrOfStrLengthFromIfToThen);
-
-                    String firstStringAfterAnnotation = arrOfStr[1];
-                    String tableColumnName = firstStringAfterAnnotation.replace("(", "");
-
-                    String tableColumnName2;
-
-                    //System.out.println("tableColumnName is " + tableColumnName);
-
-                    if (arrOfStr.length == 8) { //just generate a single value
-                        numOfTestCases++;
-
-                        tableColumnName2 = arrOfStr[5];
-
-                        for (int i = 0; i < table_column_values.size(); i++) {
-                            if (table_column_values.get(i).equals(tableColumnName)) {
-                                String boundaryString = arrOfStr[3].replace(")", "");
-
-                                if (arrOfStr[2].equals("<")) {
-                                    listOfTestData.get(i).add((int) (Math.random() * (Integer.parseInt(boundaryString) - 1)));
-                                } else if (arrOfStr[2].equals(">=")) {
-                                    Random random = new Random();
-                                    if (is_table_column_value_constrained[i]) {
-                                        int boundaryInt = Integer.parseInt(boundaryString);
-                                        int number = random.nextInt(listOfConstraints.get(i)[1] - boundaryInt) + boundaryInt;
-                                        listOfTestData.get(i).add(number);
-                                    } else {
-                                        int number = Math.abs(random.nextInt());
-                                        listOfTestData.get(i).add(number + Integer.parseInt(boundaryString));
-                                    }
-                                }
-
+                        for (int i = 1; i < arrOfStr.length; i++) {
+                            if (arrOfStr[i].equals("THEN")) {
+                                //indexOfThen = i;
                                 break;
-                            }
-                        }
-
-                        for (int i = 0; i < table_column_values.size(); i++) {
-                            if (table_column_values.get(i).equals(tableColumnName2)) {
-                                boolean lastStringIsAnInt = true;
-
-                                for (int j = 0; j < table_column_values.size(); j++) {
-                                    if (table_column_values.get(j).equals(arrOfStr[7])) { //check if arrOfStr[7] is an int or not
-                                        lastStringIsAnInt = false;
-                                        break;
-                                    }
-                                }
-
-                                if (lastStringIsAnInt) {
-                                    listOfTestData.get(i).add(Integer.parseInt(arrOfStr[7]));
+                            } else {
+                                if (i == 1) {
+                                    conditionString += arrOfStr[i].replace("(", "");
                                 } else {
-                                    for (int j = 0; j < table_column_values.size(); j++) {
-                                        if (table_column_values.get(j).equals(arrOfStr[7])) {
-                                            listOfTestData.get(i).add(listOfFixedValues[j]);
-                                        }
-                                    }
+                                    conditionString += " ";
+                                    conditionString += arrOfStr[i].replace(")", "");
                                 }
-
-                                break;
                             }
                         }
+
+                        /*conditionString.replace("(", "");
+                        conditionString.replace(")", "");*/
+
+                        System.out.println("conditionString is: " + conditionString);
+
+                        label_conditions.get(label_conditions.size() - 1).add(conditionString);
+
                     } else {
-                        tableColumnName2 = arrOfStr[8];
 
-                        int listOfFixedValuesIndex = 0;
+                        int arrOfStrLengthFromIfToThen = 0;
 
-                        for (int i = 0; i < table_column_values.size(); i++) {
-                            if (table_column_values.get(i).equals(arrOfStr[10])) {
-                                listOfFixedValuesIndex = i;
+                        for (int i = 1; i < arrOfStr.length; i++) {
+                            if (arrOfStr[i].equals("THEN")) {
+                                break;
+                            } else {
+                                arrOfStrLengthFromIfToThen++;
                             }
                         }
 
-                        if (generateAtBoundaryValues) {
-                            String firstBoundaryString = arrOfStr[3].replace(")", "");
-                            String secondBoundaryString = arrOfStr[6].replace(")", "");
+                        //System.out.println("arrOfStrLengthFromIfToThen is " + arrOfStrLengthFromIfToThen);
+
+                        String firstStringAfterAnnotation = arrOfStr[1];
+                        String tableColumnName = firstStringAfterAnnotation.replace("(", "");
+
+                        String tableColumnName2;
+
+                        //System.out.println("tableColumnName is " + tableColumnName);
+
+                        if (arrOfStr.length == 8) { //just generate a single value
+                            numOfTestCases++;
+
+                            tableColumnName2 = arrOfStr[5];
 
                             for (int i = 0; i < table_column_values.size(); i++) {
                                 if (table_column_values.get(i).equals(tableColumnName)) {
-                                    if (arrOfStr[2].equals(">=") && secondBoundaryString.charAt(1) != '=') {
-                                        for (int j = Integer.parseInt(firstBoundaryString); j < Integer.parseInt(secondBoundaryString.substring(1)); j++) {
-                                            listOfTestData.get(i).add(j);
-                                            numOfTestCases++;
+                                    String boundaryString = arrOfStr[3].replace(")", "");
+
+                                    if (arrOfStr[2].equals("<")) {
+                                        listOfTestData.get(i).add((int) (Math.random() * (Integer.parseInt(boundaryString) - 1)));
+                                    } else if (arrOfStr[2].equals(">=")) {
+                                        Random random = new Random();
+                                        if (is_table_column_value_constrained[i]) {
+                                            int boundaryInt = Integer.parseInt(boundaryString);
+                                            int number = random.nextInt(listOfConstraints.get(i)[1] - boundaryInt) + boundaryInt;
+                                            listOfTestData.get(i).add(number);
+                                        } else {
+                                            int number = Math.abs(random.nextInt());
+                                            listOfTestData.get(i).add(number + Integer.parseInt(boundaryString));
                                         }
                                     }
-                                } else if (table_column_values.get(i).equals(tableColumnName2)) {
-                                    if (arrOfStr[2].equals(">=") && secondBoundaryString.charAt(1) != '=') {
-                                        for (int j = Integer.parseInt(firstBoundaryString); j < Integer.parseInt(secondBoundaryString.substring(1)); j++) {
-                                            listOfTestData.get(i).add((int) (listOfFixedValues[listOfFixedValuesIndex] * Double.parseDouble(arrOfStr[12])));
+
+                                    break;
+                                }
+                            }
+
+                            for (int i = 0; i < table_column_values.size(); i++) {
+                                if (table_column_values.get(i).equals(tableColumnName2)) {
+                                    boolean lastStringIsAnInt = true;
+
+                                    for (int j = 0; j < table_column_values.size(); j++) {
+                                        if (table_column_values.get(j).equals(arrOfStr[7])) { //check if arrOfStr[7] is an int or not
+                                            lastStringIsAnInt = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (lastStringIsAnInt) {
+                                        listOfTestData.get(i).add(Integer.parseInt(arrOfStr[7]));
+                                    } else {
+                                        for (int j = 0; j < table_column_values.size(); j++) {
+                                            if (table_column_values.get(j).equals(arrOfStr[7])) {
+                                                listOfTestData.get(i).add(listOfFixedValues[j]);
+                                            }
+                                        }
+                                    }
+
+                                    break;
+                                }
+                            }
+                        } else {
+                            tableColumnName2 = arrOfStr[8];
+
+                            int listOfFixedValuesIndex = 0;
+
+                            for (int i = 0; i < table_column_values.size(); i++) {
+                                if (table_column_values.get(i).equals(arrOfStr[10])) {
+                                    listOfFixedValuesIndex = i;
+                                }
+                            }
+
+                            if (generateAtBoundaryValues) {
+                                String firstBoundaryString = arrOfStr[3].replace(")", "");
+                                String secondBoundaryString = arrOfStr[6].replace(")", "");
+
+                                for (int i = 0; i < table_column_values.size(); i++) {
+                                    if (table_column_values.get(i).equals(tableColumnName)) {
+                                        if (arrOfStr[2].equals(">=") && secondBoundaryString.charAt(1) != '=') {
+                                            for (int j = Integer.parseInt(firstBoundaryString); j < Integer.parseInt(secondBoundaryString.substring(1)); j++) {
+                                                listOfTestData.get(i).add(j);
+                                                numOfTestCases++;
+                                            }
+                                        }
+                                    } else if (table_column_values.get(i).equals(tableColumnName2)) {
+                                        if (arrOfStr[2].equals(">=") && secondBoundaryString.charAt(1) != '=') {
+                                            for (int j = Integer.parseInt(firstBoundaryString); j < Integer.parseInt(secondBoundaryString.substring(1)); j++) {
+                                                listOfTestData.get(i).add((int) (listOfFixedValues[listOfFixedValuesIndex] * Double.parseDouble(arrOfStr[12])));
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+
                     }
 
                 } else if (arrOfStr[0].equals("Examples:")) {
