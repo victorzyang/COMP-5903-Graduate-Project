@@ -234,13 +234,13 @@ public class Parser {
                         String firstStringAfterAnnotation = arrOfStr[1];
                         String tableColumnName = firstStringAfterAnnotation.replace("(", "");
 
-                        String tableColumnName2;
+                        String resultTableColumnName, tableColumnName2, tableColumnName3;
 
                         //System.out.println("tableColumnName is " + tableColumnName);
 
                         if (arrOfStrLengthFromIfToThen == 3) { //just generate a single value
 
-                            tableColumnName2 = arrOfStr[5];
+                            resultTableColumnName = arrOfStr[5];
 
                             for (int i = 0; i < table_column_values.size(); i++) {
                                 if (table_column_values.get(i).equals(tableColumnName)) {
@@ -256,7 +256,7 @@ public class Parser {
 
                                         //TODO: check for the other table columns without fixed data?
                                         for (int j = 0; j < table_column_values.size(); j++) {
-                                            if (!table_column_values.get(j).equals(tableColumnName) && !table_column_values.get(j).equals(tableColumnName2)) {
+                                            if (!table_column_values.get(j).equals(tableColumnName) && !table_column_values.get(j).equals(resultTableColumnName)) {
                                                 if (!is_table_column_value_fixed[j]) {
                                                     listOfTestData.get(j).add((int) (Math.random() * 10));
                                                     listOfTestData.get(j).add((int) (Math.random() * 10));
@@ -292,7 +292,7 @@ public class Parser {
                             }
 
                             for (int i = 0; i < table_column_values.size(); i++) {
-                                if (table_column_values.get(i).equals(tableColumnName2)) {
+                                if (table_column_values.get(i).equals(resultTableColumnName)) {
                                     boolean lastStringIsAnInt = true;
 
                                     for (int j = 0; j < table_column_values.size(); j++) {
@@ -366,8 +366,81 @@ public class Parser {
                                     System.out.println("listOfStringTestData[" + i + "][" + j + "]: " + listOfStringTestData.get(i).get(j));
                                 }
                             }
+                        } else if (arrOfStrLengthFromIfToThen == 5) {
+                            resultTableColumnName = arrOfStr[7];
+                            tableColumnName2 = arrOfStr[3];
+                            tableColumnName3 = arrOfStr[5].replace(")", "");
+
+                            //TODO: equilateral triangle example
+                            // if generate at boundary values?
+
+                            if (arrOfStr[2].equals("==") && arrOfStr[4].equals("==")) {
+                                int testDataInt = (int) (Math.random() * 10);
+
+                                for (int i = 0; i < table_column_values.size(); i++) {
+                                    if (table_column_values.get(i).equals(tableColumnName) || table_column_values.get(i).equals(tableColumnName2)
+                                        || table_column_values.get(i).equals(tableColumnName3)) {
+                                        listOfTestData.get(i).add(testDataInt);
+                                        numOfTestCases++;
+                                    }
+                                }
+                            }
+
+                            System.out.println("Printing out listOfTestData");
+                            for (int j = 0; j < listOfTestData.size(); j++) {
+                                for (int k = 0; k < listOfTestData.get(j).size(); k++) {
+                                    System.out.println("listOfTestData[" + j + "][" + k + "]: " + listOfTestData.get(j).get(k));
+                                }
+                            }
+
+                            boolean lastStringIsAnInt = true;
+
+                            if (arrOfStr[9].charAt(0) == '‘') {
+                                lastStringIsAnInt = false;
+                            }
+
+                            if (lastStringIsAnInt) {
+
+                            } else {
+                                if (arrOfStr[9].charAt(0) == '‘') {
+                                    String stringToAdd = "";
+
+                                    //TODO: listOfStringTestData and is_table_column_value_string
+                                    for (int i = 9; i < arrOfStr.length; i++) {
+                                        if (i == 9) {
+                                            stringToAdd += arrOfStr[i].replace("‘", "");
+                                        } else if (i == arrOfStr.length - 1) {
+                                            stringToAdd += " ";
+                                            stringToAdd += arrOfStr[i].replace("’", "");
+                                        } else {
+                                            stringToAdd += " ";
+                                            stringToAdd += arrOfStr[i];
+                                        }
+                                    }
+
+                                    for (int i = 0; i < table_column_values.size(); i++) {
+                                        if (table_column_values.get(i).equals(resultTableColumnName)) {
+                                            if (arrOfStr[2].equals("==") && arrOfStr[4].equals("==")) {
+                                                listOfStringTestData.get(i).add(stringToAdd);
+                                            }
+
+                                            is_table_column_value_string[i] = true;
+
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                System.out.println("Printing out listOfStringTestData");
+                                for (int i = 0; i < listOfStringTestData.size(); i++) {
+                                    for (int j = 0; j < listOfStringTestData.get(i).size(); j++) {
+                                        System.out.println("listOfStringTestData[" + i + "][" + j + "]: " + listOfStringTestData.get(i).get(j));
+                                    }
+                                }
+                            }
+
                         } else {
-                            tableColumnName2 = arrOfStr[8];
+                            resultTableColumnName = arrOfStr[8];
 
                             int listOfFixedValuesIndex = 0;
 
@@ -389,7 +462,7 @@ public class Parser {
                                                 numOfTestCases++;
                                             }
                                         }
-                                    } else if (table_column_values.get(i).equals(tableColumnName2)) {
+                                    } else if (table_column_values.get(i).equals(resultTableColumnName)) {
                                         if (arrOfStr[2].equals(">=") && secondBoundaryString.charAt(1) != '=') {
                                             for (int j = Integer.parseInt(firstBoundaryString); j < Integer.parseInt(secondBoundaryString.substring(1)); j++) {
                                                 listOfTestData.get(i).add((int) (listOfFixedValues[listOfFixedValuesIndex] * Double.parseDouble(arrOfStr[12])));
