@@ -371,19 +371,59 @@ public class Parser {
                             tableColumnName2 = arrOfStr[3];
                             tableColumnName3 = arrOfStr[5].replace(")", "");
 
-                            //TODO: equilateral triangle example
+                            //TODO: 'not a triangle' examples
                             // if generate at boundary values?
 
                             if (arrOfStr[2].equals("==") && arrOfStr[4].equals("==")) {
-                                int testDataInt = (int) (Math.random() * 10);
+                                int testDataInt = (int) (Math.random() * 10) + 1;
 
                                 for (int i = 0; i < table_column_values.size(); i++) {
                                     if (table_column_values.get(i).equals(tableColumnName) || table_column_values.get(i).equals(tableColumnName2)
                                         || table_column_values.get(i).equals(tableColumnName3)) {
                                         listOfTestData.get(i).add(testDataInt);
-                                        numOfTestCases++;
+                                        //numOfTestCases++; //TODO: Maybe this should be moved outside the for loop?
                                     }
                                 }
+
+                                numOfTestCases++;
+                            } else if (arrOfStr[2].equals(">=") && arrOfStr[4].equals("+")) {
+                                int int1, int2, int3;
+
+                                int2 = (int) (Math.random() * 10) + 1;
+                                int3 = (int) (Math.random() * 10) + 1;
+                                int1 = int2 + int3;
+
+                                //case for '='
+
+                                for (int i = 0; i < table_column_values.size(); i++) {
+                                    if (table_column_values.get(i).equals(tableColumnName)) {
+                                        listOfTestData.get(i).add(int1);
+                                    } else if (table_column_values.get(i).equals(tableColumnName2)) {
+                                        listOfTestData.get(i).add(int2);
+                                    } else if (table_column_values.get(i).equals(tableColumnName3)) {
+                                        listOfTestData.get(i).add(int3);
+                                    }
+                                }
+
+                                int int4, int5, int6;
+
+                                int5 = (int) (Math.random() * 10) + 1;
+                                int6 = (int) (Math.random() * 10) + 1;
+                                int4 = (int) (Math.random() * 10) + 1 + int5 + int6;
+
+                                //TODO: do a case for '>'
+
+                                for (int i = 0; i < table_column_values.size(); i++) {
+                                    if (table_column_values.get(i).equals(tableColumnName)) {
+                                        listOfTestData.get(i).add(int4);
+                                    } else if (table_column_values.get(i).equals(tableColumnName2)) {
+                                        listOfTestData.get(i).add(int5);
+                                    } else if (table_column_values.get(i).equals(tableColumnName3)) {
+                                        listOfTestData.get(i).add(int6);
+                                    }
+                                }
+
+                                numOfTestCases += 2;
                             }
 
                             System.out.println("Printing out listOfTestData");
@@ -422,6 +462,9 @@ public class Parser {
                                         if (table_column_values.get(i).equals(resultTableColumnName)) {
                                             if (arrOfStr[2].equals("==") && arrOfStr[4].equals("==")) {
                                                 listOfStringTestData.get(i).add(stringToAdd);
+                                            } else if (arrOfStr[2].equals(">=") && arrOfStr[4].equals("+")) {
+                                                listOfStringTestData.get(i).add(stringToAdd);
+                                                listOfStringTestData.get(i).add(stringToAdd);
                                             }
 
                                             is_table_column_value_string[i] = true;
@@ -430,6 +473,8 @@ public class Parser {
                                         }
                                     }
                                 }
+
+                                //TODO: need to check all column names to see if random number needs to be generated
 
                                 System.out.println("Printing out listOfStringTestData");
                                 for (int i = 0; i < listOfStringTestData.size(); i++) {
