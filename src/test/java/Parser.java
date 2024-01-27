@@ -258,8 +258,8 @@ public class Parser {
                                         for (int j = 0; j < table_column_values.size(); j++) {
                                             if (!table_column_values.get(j).equals(tableColumnName) && !table_column_values.get(j).equals(resultTableColumnName)) {
                                                 if (!is_table_column_value_fixed[j]) {
-                                                    listOfTestData.get(j).add((int) (Math.random() * 10));
-                                                    listOfTestData.get(j).add((int) (Math.random() * 10));
+                                                    listOfTestData.get(j).add((int) (Math.random() * 10) + 1);
+                                                    listOfTestData.get(j).add((int) (Math.random() * 10) + 1);
                                                 }
                                             }
                                         }
