@@ -484,7 +484,7 @@ public class Parser {
                                 }
                             }
 
-                        } else {
+                        } else if (arrOfStrLengthFromIfToThen == 6){
                             resultTableColumnName = arrOfStr[8];
 
                             int listOfFixedValuesIndex = 0;
@@ -516,6 +516,20 @@ public class Parser {
                                     }
                                 }
                             }
+                        } else {
+                            //TODO: check if there are any labeled constraints
+                            // check what are the conditions for said labeled constraint in label_conditions
+
+                            // Split the @IF annotation string into substrings by dividing the annotation with '&&'
+                            // Don't include the substring after 'THEN' however
+
+                            // if there are any '||' text, that means multiple test cases will have to be generated from the same @IF annotation
+                            // numOfTestCases will equal to the number of '||' until either '&&' or 'THEN' is reached
+                            // Need to keep track of the particular variables for each different test case (perhaps in a double arraylist of strings?)
+
+                            //TODO: check how many conditions there are (?)
+
+                            // If expected result is a string, add to 'listOfStringTestData' numOfTestCases times
                         }
 
                     }

@@ -14,8 +14,8 @@ Feature: Myer’s triangle problem
   @IF (b >= a + c) THEN msg = ‘not a triangle’
   @IF (c >= a + b) THEN msg = ‘not a triangle’
   @IF (a == b == c) THEN msg = ‘equilateral triangle’
-  @IF (   ( (a==b) || (a==c) || (b==c)) &&  (!(a == b == c))  &&  (! INVALID_TRIANGLE)       ) THEN msg = ‘isoceles triangle’
-  @IF (      ( (a!=b) && (a!=c) && (b!=c)) &&  (! INVALID_TRIANGLE)          ) THEN msg = ‘scalene triangle’
+  @IF ( ( (a==b) || (a==c) || (b==c)) && (!(a == b == c)) && (! INVALID_TRIANGLE) ) THEN msg = ‘isoceles triangle’
+  @IF ( ( (a!=b) && (a!=c) && (b!=c)) && (! INVALID_TRIANGLE) ) THEN msg = ‘scalene triangle’
   Scenario Outline: Determine type of triangle
     Given Sides of triangle are <a>, <b> and <c>
     Then Type of triangle is <msg>
