@@ -517,8 +517,8 @@ public class Parser {
                                 }
                             }
                         } else {
-                            //TODO: check if there are any labeled constraints
-                            // check what are the conditions for said labeled constraint in label_conditions
+                            // check if there are any labeled constraints
+                            // and check what are the conditions for said labeled constraint in label_conditions
 
                             boolean are_there_labeled_constraints = false;
                             ArrayList<ArrayList<String>> label_conditions_to_work_with = new ArrayList<ArrayList<String>>();
@@ -550,7 +550,28 @@ public class Parser {
                             }
 
                             // Split the @IF annotation string into substrings by dividing the annotation with '&&'
-                            // Don't include the substring after 'THEN' however
+
+                            ArrayList<String> conditions = new ArrayList<>();
+                            String stringToAdd = "";
+
+                            for (int i = 1; i < arrOfStrLengthFromIfToThen; i++) {
+                                if (arrOfStr[i].equals("&&")) {
+                                    conditions.add(stringToAdd);
+                                    stringToAdd = "";
+                                } else {
+                                    stringToAdd += " ";
+                                    stringToAdd += arrOfStr[i];
+                                }
+                            }
+
+                            for (int i = 0; i < conditions.size(); i++) {
+                                conditions.set(i, conditions.get(i).substring(1));
+                            }
+
+                            System.out.println("All of the conditions are:");
+                            for (int i = 0; i < conditions.size(); i++) {
+                                System.out.println("conditions[" + i + "]: " + conditions.get(i));
+                            }
 
                             // if there are any '||' text, that means multiple test cases will have to be generated from the same @IF annotation
                             // numOfTestCases will equal to the number of '||' until either '&&' or 'THEN' is reached
