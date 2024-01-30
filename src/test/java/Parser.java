@@ -520,12 +520,43 @@ public class Parser {
                             //TODO: check if there are any labeled constraints
                             // check what are the conditions for said labeled constraint in label_conditions
 
+                            boolean are_there_labeled_constraints = false;
+                            ArrayList<ArrayList<String>> label_conditions_to_work_with = new ArrayList<ArrayList<String>>();
+
+                            for (int i = 1; i < arrOfStrLengthFromIfToThen; i++) {
+                                String currentString = arrOfStr[i];
+
+                                if (!(arrOfStr[i].equals("(")) && !(arrOfStr[i].equals(")"))) {
+                                    currentString = currentString.replace("(", "");
+                                    currentString = currentString.replace(")", "");
+
+                                    for (int j = 0; j < label_names.size(); j++) {
+                                        if (label_names.get(j).equals(currentString)) {
+                                            are_there_labeled_constraints = true;
+
+                                            label_conditions_to_work_with.add(label_conditions.get(j));
+                                        }
+                                    }
+                                }
+                            }
+
+                            System.out.println("Are there labeled constraints: " + are_there_labeled_constraints);
+
+                            System.out.println("Printing out label_conditions_to_work_with");
+                            for (int i = 0; i < label_conditions_to_work_with.size(); i++) {
+                                for (int j = 0; j < label_conditions_to_work_with.get(i).size(); j++) {
+                                    System.out.println("label_conditions_to_work_with[" + i + "][" + j + "] is: " + label_conditions_to_work_with.get(i).get(j));
+                                }
+                            }
+
                             // Split the @IF annotation string into substrings by dividing the annotation with '&&'
                             // Don't include the substring after 'THEN' however
 
                             // if there are any '||' text, that means multiple test cases will have to be generated from the same @IF annotation
                             // numOfTestCases will equal to the number of '||' until either '&&' or 'THEN' is reached
                             // Need to keep track of the particular variables for each different test case (perhaps in a double arraylist of strings?)
+
+                            // ***Use a while loop to determine when a generated test case satisfies all the constraints***
 
                             //TODO: check how many conditions there are (?)
 
