@@ -517,7 +517,7 @@ public class Parser {
                                 }
                             }
                         } else {
-                            // check if there are any labeled constraints
+                            // check if there are any labeled constraints (This part is good)
                             // and check what are the conditions for said labeled constraint in label_conditions
 
                             boolean are_there_labeled_constraints = false;
@@ -549,18 +549,30 @@ public class Parser {
                                 }
                             }
 
-                            // Split the @IF annotation string into substrings by dividing the annotation with '&&'
+                            // Split the @IF annotation string into substrings by dividing the annotation with '&&' (The 'conditions' data structure is good)
 
                             ArrayList<String> conditions = new ArrayList<>();
                             String stringToAdd = "";
+
+                            numOfTestCases++;
+
+                            int numOfTestCasesInThisAnnotation = 1;
 
                             for (int i = 1; i < arrOfStrLengthFromIfToThen; i++) {
                                 if (arrOfStr[i].equals("&&")) {
                                     conditions.add(stringToAdd);
                                     stringToAdd = "";
                                 } else {
+                                    if (arrOfStr[i].equals("||")) {
+                                        numOfTestCases++;
+                                        numOfTestCasesInThisAnnotation++;
+                                    }
                                     stringToAdd += " ";
                                     stringToAdd += arrOfStr[i];
+
+                                    if (i == arrOfStrLengthFromIfToThen - 1) {
+                                        conditions.add(stringToAdd);
+                                    }
                                 }
                             }
 
@@ -573,6 +585,463 @@ public class Parser {
                                 System.out.println("conditions[" + i + "]: " + conditions.get(i));
                             }
 
+                            //System.out.println("The number of test cases to be generated is: " + numOfTestCases);
+                            System.out.println("The number of test cases to be generated from this annotation: " + numOfTestCasesInThisAnnotation); //This is good
+
+                            if (numOfTestCasesInThisAnnotation == 1) {
+
+                            } else {
+                                for (int i = 0; i < conditions.size(); i++) {
+                                    //TODO: check if any of the strings in conditions contains "||"
+                                    if (conditions.get(i).contains("||")) {
+
+                                        //Need to have list of strings
+                                        String[] arrOfConditionsStrings = conditions.get(i).split(" ");
+
+                                        //TODO: have arraylist of the different possible test cases that are in arrOfConditionsStrings
+                                        ArrayList<String> testCaseConditionStrings = new ArrayList<>(); //This data structure is correct
+
+                                        for (int j = 0; j < arrOfConditionsStrings.length; j++) {
+                                            String currentString = arrOfConditionsStrings[j];
+                                            if (!(arrOfConditionsStrings[j].equals("(")) && !(arrOfConditionsStrings[j].equals(")")) && !(arrOfConditionsStrings[j].equals("||"))) {
+                                                currentString = currentString.replace("(", "");
+                                                currentString = currentString.replace(")", "");
+
+                                                testCaseConditionStrings.add(currentString);
+                                            }
+                                        }
+
+                                        System.out.println("Printing out testCaseConditionStrings");
+                                        for (int j = 0; j < testCaseConditionStrings.size(); j++) {
+                                            System.out.println("testCaseConditionStrings[" + j + "]: " + testCaseConditionStrings.get(j));
+                                        }
+
+                                        //TODO: add to listOfTestData in below for loop
+                                        for (int j = 0; j < numOfTestCasesInThisAnnotation; j++) {
+                                            //look at the possible test cases in 'testCaseConditionStrings'
+                                            String relation = ""; //ie. '==', '!='
+                                            String value1 = "";
+                                            String value2 = "";
+
+                                            boolean relation_string_has_been_traversed = false;
+
+                                            for (int char_i = 0; char_i < testCaseConditionStrings.get(j).length(); char_i++) { //This part appears good
+                                                if (testCaseConditionStrings.get(j).charAt(char_i) == '=' || testCaseConditionStrings.get(j).charAt(char_i) == '!') {
+                                                    relation += testCaseConditionStrings.get(j).charAt(char_i);
+                                                    relation_string_has_been_traversed = true;
+                                                } else {
+                                                    if (relation_string_has_been_traversed) {
+                                                        value2 += testCaseConditionStrings.get(j).charAt(char_i);
+                                                    } else {
+                                                        value1 += testCaseConditionStrings.get(j).charAt(char_i);
+                                                    }
+                                                }
+                                            }
+
+                                            System.out.println("The value to the left of the relation is: " + value1);
+                                            System.out.println("The relation is: " + relation);
+                                            System.out.println("The value to the right of the relation is: " + value2);
+
+                                            if (relation.equals("==")) {
+                                                // generate same random int for both value1 and value2 (This part seems good)
+                                                int testDataInt = (int) (Math.random() * 10);
+                                                testDataInt += 1;
+                                                int value1Int = testDataInt;
+                                                int value2Int = testDataInt;
+
+                                                //TODO: label_names and label_conditions (this is good for the time being)
+                                                boolean there_are_labeled_conditions = false;
+                                                boolean there_are_labeled_conditions_to_negate = false;
+                                                //TODO: have an arraylist of the different possible conditions (this is good)
+                                                ArrayList<String> label_conditions_to_work_with_arraylist = new ArrayList<>();
+
+                                                for (int c = 0; c < conditions.size(); c++) {
+                                                    String[] arrOfConditionsStrings_Inner = conditions.get(c).split(" ");
+
+                                                    for (int s = 0; s < arrOfConditionsStrings_Inner.length; s++) {
+                                                        String currentString = arrOfConditionsStrings_Inner[s];
+                                                        if (!(currentString.equals("(")) && !(currentString.equals(")")) && !(currentString.equals("||"))) {
+                                                            currentString = currentString.replace("(", "");
+                                                            currentString = currentString.replace(")", "");
+
+                                                            //TODO: test this
+                                                            for (int ln = 0; ln < label_names.size(); ln++) {
+                                                                if (currentString.equals(label_names.get(ln))) {
+                                                                    if (s == 0) {
+                                                                        there_are_labeled_conditions = true;
+                                                                    } else {
+                                                                        if (arrOfConditionsStrings_Inner[0].contains("!")) {
+                                                                            there_are_labeled_conditions_to_negate = true; //check if there is a negation in front of labeled condition
+                                                                        }
+                                                                    }
+
+                                                                    for (int lc = 0; lc < label_conditions_to_work_with.get(ln).size(); lc++) {
+                                                                        label_conditions_to_work_with_arraylist.add(label_conditions_to_work_with.get(ln).get(lc));
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                System.out.println("Are there labeled conditions: " + there_are_labeled_conditions);
+                                                System.out.println("Are there labeled conditions to negate: " + there_are_labeled_conditions_to_negate);
+
+                                                System.out.println("Printing out all items in label_conditions_to_work_with_arraylist:");
+                                                for (int c = 0; c < label_conditions_to_work_with_arraylist.size(); c++) {
+                                                    System.out.println("label_conditions_to_work_with_arraylist at index " + c + " is: " + label_conditions_to_work_with_arraylist.get(c));
+                                                }
+
+                                                //TODO: iterate through all conditions in 'conditions'
+                                                for (int c = 0; c < conditions.size(); c++) {
+                                                    String[] arrOfConditionsStrings_Inner = conditions.get(c).split(" ");
+
+                                                    System.out.println("Printing out arrOfConditionsStrings_Inner:");
+                                                    for (int aocs_i = 0; aocs_i < arrOfConditionsStrings_Inner.length; aocs_i++) {
+                                                        System.out.println("arrOfConditionsStrings_Inner at index " + aocs_i + " is: " + arrOfConditionsStrings_Inner[aocs_i]);
+                                                    }
+
+                                                    boolean checkThisConditionString = true;
+
+                                                    for (int s = 0; s < arrOfConditionsStrings_Inner.length; s++) {
+                                                        String currentString = arrOfConditionsStrings_Inner[s];
+
+                                                        if (currentString.equals("||")) {
+                                                            checkThisConditionString = false;
+                                                        }
+
+                                                        currentString = currentString.replace("(", "");
+                                                        currentString = currentString.replace(")", "");
+
+                                                        for (int ln = 0; ln < label_names.size(); ln++) {
+                                                            if (label_names.get(ln).equals(currentString)) {
+                                                                checkThisConditionString = false;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (checkThisConditionString) {
+                                                        // check if there is negation by checking arrOfConditionsStrings_Inner[0]
+                                                        boolean there_is_negation = false;
+
+                                                        for (int char_i = 0; char_i < arrOfConditionsStrings_Inner[0].length(); char_i++) {
+                                                            if (arrOfConditionsStrings_Inner[0].charAt(char_i) == '!') {
+                                                                if (arrOfConditionsStrings_Inner[0].charAt(char_i + 1) == '(') {
+                                                                    there_is_negation = true;
+                                                                }
+                                                            }
+                                                        }
+
+                                                        //TODO: check the current condition as well as making sure any labeled conditions are still satisfied
+
+                                                        ////
+
+                                                        String previous_value_checked = "";
+
+                                                        // iterate through all values of current condition
+                                                        for (int s = 0; s < arrOfConditionsStrings_Inner.length; s += 2) {
+                                                            String current_value_being_checked = arrOfConditionsStrings_Inner[s];
+
+                                                            if (s == 0) {
+                                                                current_value_being_checked = current_value_being_checked.replace("(", "");
+                                                                current_value_being_checked = current_value_being_checked.replace("!", "");
+
+                                                                // check if first value is either value1 or value2
+                                                                if (!(current_value_being_checked.equals(value1)) && !(current_value_being_checked.equals(value2))) {
+                                                                    // if arrOfConditionsStrings_Inner[2] is either value1 or value2
+                                                                    if (arrOfConditionsStrings_Inner[2].equals(value1) || arrOfConditionsStrings_Inner[2].equals(value2)) {
+                                                                        if (arrOfConditionsStrings_Inner[1].equals("==")) {
+                                                                            if (relation.equals("==") && there_is_negation) {
+
+                                                                                if (there_are_labeled_conditions) {
+                                                                                    boolean all_labeled_conditions_are_satisfied = false;
+
+                                                                                    //TODO: label_conditions_to_work_with_arraylist
+                                                                                } else if (there_are_labeled_conditions_to_negate) { //checks if there is a negation in front of labeled condition
+                                                                                    boolean all_labeled_conditions_are_negated = false;
+
+                                                                                    // generate a random int that is different than value1Int and satisfies the labeled conditions (using label_names and label_conditions)
+                                                                                    while (!all_labeled_conditions_are_negated) {
+                                                                                        int testDataInt_Inner  = (int) (Math.random() * 10);
+
+                                                                                        boolean there_is_labeled_condition_not_negated = false;
+
+                                                                                        if (testDataInt_Inner != value1Int) {
+                                                                                            //TODO: label_conditions_to_work_with
+                                                                                            for (int lca = 0; lca < label_conditions_to_work_with.size(); lca++) {
+                                                                                                for (int lc = 0; lc < label_conditions_to_work_with.get(lca).size(); lc++) {
+                                                                                                    String[] arrOfLabelConditionString = label_conditions_to_work_with_arraylist.get(lc).split(" ");
+
+                                                                                                    int leftSideOfInequality = 0;
+                                                                                                    int rightSideOfInequality = 0;
+
+                                                                                                    // if left side is value1 or value2
+                                                                                                    if (arrOfLabelConditionString[0].equals(value1) || arrOfLabelConditionString[0].equals(value2)) {
+                                                                                                        leftSideOfInequality = value1Int;
+                                                                                                    } else if (arrOfLabelConditionString[0].equals(current_value_being_checked)) {
+                                                                                                        leftSideOfInequality = testDataInt_Inner;
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString[2].equals(value1) || arrOfLabelConditionString[2].equals(value2)) {
+                                                                                                        rightSideOfInequality = value1Int;
+                                                                                                    } else if (arrOfLabelConditionString[2].equals(current_value_being_checked)) {
+                                                                                                        rightSideOfInequality = testDataInt_Inner;
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString.length > 3) {
+                                                                                                        for (int lcs = 3; lcs < arrOfLabelConditionString.length; lcs++) {
+                                                                                                            if (arrOfLabelConditionString[lcs].equals("+")) {
+                                                                                                                if (arrOfLabelConditionString[lcs + 1].equals(value1) || arrOfLabelConditionString[lcs + 1].equals(value2)) {
+                                                                                                                    rightSideOfInequality += value1Int;
+                                                                                                                } else if (arrOfLabelConditionString[lcs + 1].equals(current_value_being_checked)) {
+                                                                                                                    rightSideOfInequality += testDataInt_Inner;
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString[1].equals(">=")) {
+                                                                                                        if (leftSideOfInequality >= rightSideOfInequality) {
+                                                                                                            there_is_labeled_condition_not_negated = true;
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                            /*for (int lc = 0; lc < label_conditions_to_work_with_arraylist.size(); lc++) {
+                                                                                                String[] arrOfLabelConditionString = label_conditions_to_work_with_arraylist.get(lc).split(" ");
+
+                                                                                                int leftSideOfInequality;
+                                                                                                int rightSideOfInequality;
+
+                                                                                                // if left side is value1 or value2
+                                                                                                if (arrOfLabelConditionString[0].equals(value1) || arrOfLabelConditionString[0].equals(value2)) {
+                                                                                                    leftSideOfInequality = value1Int;
+                                                                                                } else if (arrOfLabelConditionString[0].equals()) {
+                                                                                                    
+                                                                                                }
+
+                                                                                                if (arrOfLabelConditionString[1].equals(">=")) {
+
+                                                                                                }
+                                                                                            }*/
+                                                                                        }
+
+                                                                                        if (!there_is_labeled_condition_not_negated) {
+                                                                                            all_labeled_conditions_are_negated = true;
+
+                                                                                            // add to listOfTestData
+                                                                                            for (int n = 0; n < table_column_values.size(); n++) {
+                                                                                                if (table_column_values.get(n).equals(value1) || table_column_values.get(n).equals(value2)) {
+                                                                                                    listOfTestData.get(n).add(value1Int);
+                                                                                                } else if (table_column_values.get(n).equals(current_value_being_checked)) {
+                                                                                                    listOfTestData.get(n).add(testDataInt_Inner);
+                                                                                                }
+                                                                                            }
+                                                                                            
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                previous_value_checked = current_value_being_checked;
+
+                                                            } else if (s == arrOfConditionsStrings_Inner.length - 1) { //if this is the last string
+                                                                current_value_being_checked = current_value_being_checked.replace(")", "");
+
+                                                                if (!(current_value_being_checked.equals(value1)) && !(current_value_being_checked.equals(value2))) {
+                                                                    if (arrOfConditionsStrings_Inner[s-2].equals(value1) || arrOfConditionsStrings_Inner[s-2].equals(value2)) {
+                                                                        if (arrOfConditionsStrings_Inner[s-1].equals("==")) {
+                                                                            if (relation.equals("==") && there_is_negation) {
+                                                                                if (there_are_labeled_conditions) {
+                                                                                    boolean all_labeled_conditions_are_satisfied = false;
+
+                                                                                    //TODO: label_conditions_to_work_with_arraylist
+                                                                                } else if (there_are_labeled_conditions_to_negate) { //checks if there is a negation in front of labeled condition
+                                                                                    boolean all_labeled_conditions_are_negated = false;
+
+                                                                                    // generate a random int that is different than value1Int and satisfies the labeled conditions (using label_names and label_conditions)
+                                                                                    while (!all_labeled_conditions_are_negated) {
+                                                                                        int testDataInt_Inner  = (int) (Math.random() * 10);
+
+                                                                                        boolean there_is_labeled_condition_not_negated = false;
+
+                                                                                        if (testDataInt_Inner != value1Int) {
+                                                                                            for (int lca = 0; lca < label_conditions_to_work_with.size(); lca++) {
+                                                                                                for (int lc = 0; lc < label_conditions_to_work_with.get(lca).size(); lc++) {
+                                                                                                    String[] arrOfLabelConditionString = label_conditions_to_work_with_arraylist.get(lc).split(" ");
+
+                                                                                                    int leftSideOfInequality = 0;
+                                                                                                    int rightSideOfInequality = 0;
+
+                                                                                                    // if left side is value1 or value2
+                                                                                                    if (arrOfLabelConditionString[0].equals(value1) || arrOfLabelConditionString[0].equals(value2)) {
+                                                                                                        leftSideOfInequality = value1Int;
+                                                                                                    } else if (arrOfLabelConditionString[0].equals(current_value_being_checked)) {
+                                                                                                        leftSideOfInequality = testDataInt_Inner;
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString[2].equals(value1) || arrOfLabelConditionString[2].equals(value2)) {
+                                                                                                        rightSideOfInequality = value1Int;
+                                                                                                    } else if (arrOfLabelConditionString[2].equals(current_value_being_checked)) {
+                                                                                                        rightSideOfInequality = testDataInt_Inner;
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString.length > 3) {
+                                                                                                        for (int lcs = 3; lcs < arrOfLabelConditionString.length; lcs++) {
+                                                                                                            if (arrOfLabelConditionString[lcs].equals("+")) {
+                                                                                                                if (arrOfLabelConditionString[lcs + 1].equals(value1) || arrOfLabelConditionString[lcs + 1].equals(value2)) {
+                                                                                                                    rightSideOfInequality += value1Int;
+                                                                                                                } else if (arrOfLabelConditionString[lcs + 1].equals(current_value_being_checked)) {
+                                                                                                                    rightSideOfInequality += testDataInt_Inner;
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString[1].equals(">=")) {
+                                                                                                        if (leftSideOfInequality >= rightSideOfInequality) {
+                                                                                                            there_is_labeled_condition_not_negated = true;
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+
+                                                                                        if (!there_is_labeled_condition_not_negated) {
+                                                                                            all_labeled_conditions_are_negated = true;
+
+                                                                                            // add to listOfTestData
+                                                                                            for (int n = 0; n < table_column_values.size(); n++) {
+                                                                                                if (table_column_values.get(n).equals(value1) || table_column_values.get(n).equals(value2)) {
+                                                                                                    listOfTestData.get(n).add(value1Int);
+                                                                                                } else if (table_column_values.get(n).equals(current_value_being_checked)) {
+                                                                                                    listOfTestData.get(n).add(testDataInt_Inner);
+                                                                                                }
+                                                                                            }
+
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            } else { //if this is a string in between
+
+                                                                if (!(current_value_being_checked.equals(value1)) && !(current_value_being_checked.equals(value2))) {
+                                                                    //compare between current_value_being_checked and previous_value_checked
+                                                                    if (previous_value_checked.equals(value1) || previous_value_checked.equals(value2)) { //checks if 'previous value' is either value1 or value2
+                                                                        if (arrOfConditionsStrings_Inner[s-1].equals("==")) {
+                                                                            if (relation.equals("==") && there_is_negation) {
+                                                                                if (there_are_labeled_conditions) {
+                                                                                    boolean all_labeled_conditions_are_satisfied = false;
+
+                                                                                    //TODO: label_conditions_to_work_with_arraylist
+                                                                                } else if (there_are_labeled_conditions_to_negate) { //checks if there is a negation in front of labeled condition
+                                                                                    boolean all_labeled_conditions_are_negated = false;
+
+                                                                                    // generate a random int that is different than value1Int and satisfies the labeled conditions (using label_names and label_conditions)
+                                                                                    while (!all_labeled_conditions_are_negated) {
+                                                                                        int testDataInt_Inner  = (int) (Math.random() * 10);
+
+                                                                                        boolean there_is_labeled_condition_not_negated = false;
+
+                                                                                        if (testDataInt_Inner != value1Int) {
+                                                                                            for (int lca = 0; lca < label_conditions_to_work_with.size(); lca++) {
+                                                                                                for (int lc = 0; lc < label_conditions_to_work_with.get(lca).size(); lc++) {
+                                                                                                    String[] arrOfLabelConditionString = label_conditions_to_work_with_arraylist.get(lc).split(" ");
+
+                                                                                                    int leftSideOfInequality = 0;
+                                                                                                    int rightSideOfInequality = 0;
+
+                                                                                                    // if left side is value1 or value2
+                                                                                                    if (arrOfLabelConditionString[0].equals(value1) || arrOfLabelConditionString[0].equals(value2)) {
+                                                                                                        leftSideOfInequality = value1Int;
+                                                                                                    } else if (arrOfLabelConditionString[0].equals(current_value_being_checked)) {
+                                                                                                        leftSideOfInequality = testDataInt_Inner;
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString[2].equals(value1) || arrOfLabelConditionString[2].equals(value2)) {
+                                                                                                        rightSideOfInequality = value1Int;
+                                                                                                    } else if (arrOfLabelConditionString[2].equals(current_value_being_checked)) {
+                                                                                                        rightSideOfInequality = testDataInt_Inner;
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString.length > 3) {
+                                                                                                        for (int lcs = 3; lcs < arrOfLabelConditionString.length; lcs++) {
+                                                                                                            if (arrOfLabelConditionString[lcs].equals("+")) {
+                                                                                                                if (arrOfLabelConditionString[lcs + 1].equals(value1) || arrOfLabelConditionString[lcs + 1].equals(value2)) {
+                                                                                                                    rightSideOfInequality += value1Int;
+                                                                                                                } else if (arrOfLabelConditionString[lcs + 1].equals(current_value_being_checked)) {
+                                                                                                                    rightSideOfInequality += testDataInt_Inner;
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+
+                                                                                                    if (arrOfLabelConditionString[1].equals(">=")) {
+                                                                                                        if (leftSideOfInequality >= rightSideOfInequality) {
+                                                                                                            there_is_labeled_condition_not_negated = true;
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+
+                                                                                        if (!there_is_labeled_condition_not_negated) { //TODO
+                                                                                            all_labeled_conditions_are_negated = true;
+
+                                                                                            // add to listOfTestData
+                                                                                            for (int n = 0; n < table_column_values.size(); n++) {
+                                                                                                if (table_column_values.get(n).equals(value1) || table_column_values.get(n).equals(value2)) {
+                                                                                                    listOfTestData.get(n).add(value1Int);
+                                                                                                } else if (table_column_values.get(n).equals(current_value_being_checked)) {
+                                                                                                    listOfTestData.get(n).add(testDataInt_Inner);
+                                                                                                }
+                                                                                            }
+
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                previous_value_checked = current_value_being_checked;
+                                                            }
+                                                        }
+
+                                                        //TODO: have an arraylist or some other data structure that keeps track of all the test data that still needs to be added
+
+                                                        //TODO: add to 'listOfTestData' (DONE)
+
+                                                        /*for (int s = 0; s < arrOfConditionsStrings_Inner.length; s++) {
+                                                            String currentString = arrOfConditionsStrings_Inner[s];
+                                                            if (!(currentString.equals("(")) && !(currentString.equals(")")) && !(currentString.equals("||"))) {
+                                                                currentString = currentString.replace("(", "");
+                                                                currentString = currentString.replace(")", "");
+
+                                                                //TODO
+                                                            }
+                                                        }*/
+                                                    }
+
+                                                }
+
+                                                //TODO: have while loop so that test cases are generated until the appropriate ones are generated
+
+                                            }
+
+                                        }
+
+                                    }
+                                }
+                            }
+
                             // if there are any '||' text, that means multiple test cases will have to be generated from the same @IF annotation
                             // numOfTestCases will equal to the number of '||' until either '&&' or 'THEN' is reached
                             // Need to keep track of the particular variables for each different test case (perhaps in a double arraylist of strings?)
@@ -582,6 +1051,45 @@ public class Parser {
                             //TODO: check how many conditions there are (?)
 
                             // If expected result is a string, add to 'listOfStringTestData' numOfTestCases times
+
+                            //TODO
+                            boolean lastStringIsAnInt = true;
+
+                            if (arrOfStr[arrOfStrLengthFromIfToThen + 3].charAt(0) == '‘') {
+                                lastStringIsAnInt = false;
+                            }
+
+                            if (lastStringIsAnInt) {
+
+                            } else {
+                                String testDataStringToAdd = "";
+
+                                resultTableColumnName = arrOfStr[arrOfStrLengthFromIfToThen + 1];
+
+                                for (int i = arrOfStrLengthFromIfToThen + 3; i < arrOfStr.length; i++) {
+                                    if (i == arrOfStrLengthFromIfToThen + 3) {
+                                        testDataStringToAdd += arrOfStr[i].replace("‘", "");
+                                    } else if (i == arrOfStr.length - 1) {
+                                        testDataStringToAdd += " ";
+                                        testDataStringToAdd += arrOfStr[i].replace("’", "");
+                                    } else {
+                                        testDataStringToAdd += " ";
+                                        testDataStringToAdd += arrOfStr[i];
+                                    }
+                                }
+
+                                for (int i = 0; i < table_column_values.size(); i++) {
+                                    if (table_column_values.get(i).equals(resultTableColumnName)) {
+                                        for (int j = 0; j < numOfTestCasesInThisAnnotation; j++) {
+                                            listOfStringTestData.get(i).add(testDataStringToAdd);
+                                        }
+
+                                        is_table_column_value_string[i] = true;
+
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
                     }
