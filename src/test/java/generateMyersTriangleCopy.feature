@@ -20,3 +20,21 @@ Feature: Myer’s triangle problem
     Given Sides of triangle are <a>, <b> and <c>
     Then Type of triangle is <msg>
     Examples:
+      | a | b | c | msg |
+      | -10 | 10 | 5 | size < 1 |
+      | 0 | 5 | 5 | size < 1 |
+      | 4 | -1 | 7 | size < 1 |
+      | 8 | 0 | 6 | size < 1 |
+      | 2 | 4 | -9 | size < 1 |
+      | 3 | 5 | 0 | size < 1 |
+      | 16 | 8 | 8 | not a triangle |
+      | 24 | 8 | 8 | not a triangle |
+      | 1 | 4 | 3 | not a triangle |
+      | 1 | 8 | 6 | not a triangle |
+      | 10 | 6 | 16 | not a triangle |
+      | 5 | 8 | 18 | not a triangle |
+      | 10 | 10 | 10 | equilateral triangle |
+      | 9 | 9 | 6 | isoceles triangle |
+      | 5 | 2 | 5 | isoceles triangle |
+      | 2 | 3 | 3 | isoceles triangle |
+      | 6 | 2 | 7 | scalene triangle |

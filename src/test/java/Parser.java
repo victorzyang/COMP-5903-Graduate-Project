@@ -770,7 +770,7 @@ public class Parser {
                                             if (numOfTestCaseValuesAssigned == 0) { // If 'numOfTestCaseValuesAssigned' == 0, then just generate random ints for the two specific values
 
                                                 int left_value = (int) (Math.random() * 10);
-                                                left_value += 1;
+                                                left_value += 2;
 
                                                 int right_value = 0;
 
@@ -779,7 +779,7 @@ public class Parser {
 
                                                     while(!two_values_are_not_equal) {
                                                         right_value = (int) (Math.random() * 10);
-                                                        right_value += 1;
+                                                        right_value += 2;
 
                                                         if (left_value != right_value) {
                                                             two_values_are_not_equal = true;
@@ -1026,7 +1026,7 @@ public class Parser {
                                             if (relation.equals("==")) {
                                                 // generate same random int for both value1 and value2 (This part seems good)
                                                 int testDataInt = (int) (Math.random() * 10);
-                                                testDataInt += 1;
+                                                testDataInt += 2;
                                                 int value1Int = testDataInt;
                                                 int value2Int = testDataInt;
 
@@ -1434,21 +1434,29 @@ public class Parser {
                             // If expected result is a string, add to 'listOfStringTestData' numOfTestCases times
 
                             //TODO
+                            System.out.println("Adding result test data value(s)");
+
                             boolean lastStringIsAnInt = true;
 
-                            if (arrOfStr[arrOfStrLengthFromIfToThen + 3].charAt(0) == '‘') {
+                            //System.out.println("arrOfStr[arrOfStrLengthFromIfToThen + 3] is: " + arrOfStr[arrOfStrLengthFromIfToThen + 3]);
+
+                            if (arrOfStr[arrOfStrLengthFromIfToThen + 4].charAt(0) == '‘') {
                                 lastStringIsAnInt = false;
                             }
+
+                            System.out.println("Is last string an int: " + lastStringIsAnInt);
 
                             if (lastStringIsAnInt) {
 
                             } else {
+                                System.out.println("Last string is NOT an int");
+
                                 String testDataStringToAdd = "";
 
-                                resultTableColumnName = arrOfStr[arrOfStrLengthFromIfToThen + 1];
+                                resultTableColumnName = arrOfStr[arrOfStrLengthFromIfToThen + 2];
 
-                                for (int i = arrOfStrLengthFromIfToThen + 3; i < arrOfStr.length; i++) {
-                                    if (i == arrOfStrLengthFromIfToThen + 3) {
+                                for (int i = arrOfStrLengthFromIfToThen + /*3*/4; i < arrOfStr.length; i++) {
+                                    if (i == arrOfStrLengthFromIfToThen + /*3*/4) {
                                         testDataStringToAdd += arrOfStr[i].replace("‘", "");
                                     } else if (i == arrOfStr.length - 1) {
                                         testDataStringToAdd += " ";
@@ -1478,6 +1486,15 @@ public class Parser {
                 } else if (arrOfStr[0].equals("Examples:")) {
                     stringToBeWritten += table_string;
 
+                    System.out.println("The number of test cases is: " + numOfTestCases); //This is correct
+
+                    System.out.println("Printing out all elements in listOfStringTestData");
+                    for (int i = 0; i < listOfStringTestData.size(); i++) {
+                        for (int j = 0; j < listOfStringTestData.get(i).size(); j++) {
+                            System.out.println("listOfStringTestData at index " + i + " then " + j + " is: " + listOfStringTestData.get(i).get(j));
+                        }
+                    }
+
                     for (int i = 0; i < numOfTestCases; i++) { //add each row of test cases
                         stringToBeWritten += "\n      |";
                         for (int j = 0; j < is_table_column_value_fixed.length; j++) {
@@ -1487,7 +1504,11 @@ public class Parser {
                                 stringToBeWritten += " |";
                             } else {
                                 stringToBeWritten += " ";
-                                stringToBeWritten += listOfTestData.get(j).get(i);
+                                if (is_table_column_value_string[j]) {
+                                    stringToBeWritten += listOfStringTestData.get(j).get(i); //TODO: test this
+                                } else {
+                                    stringToBeWritten += listOfTestData.get(j).get(i);
+                                }
                                 stringToBeWritten += " |";
                             }
                         }
