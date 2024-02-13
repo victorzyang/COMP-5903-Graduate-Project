@@ -589,6 +589,387 @@ public class Parser {
                             System.out.println("The number of test cases to be generated from this annotation: " + numOfTestCasesInThisAnnotation); //This is good
 
                             if (numOfTestCasesInThisAnnotation == 1) {
+                                ArrayList<String> testCaseStringTracker = new ArrayList<>(); //data structure that keeps track of the current a, b, and c values
+
+                                // gather all the labeled conditions
+                                ArrayList<String> label_conditions_to_work_with_arraylist = new ArrayList<>();
+                                boolean there_are_labeled_conditions = false;
+                                boolean there_are_labeled_conditions_to_negate = false;
+
+                                for (int c = 0; c < conditions.size(); c++) {
+                                    String[] arrOfConditionsStrings_Inner = conditions.get(c).split(" ");
+
+                                    for (int s = 0; s < arrOfConditionsStrings_Inner.length; s++) {
+                                        String currentString = arrOfConditionsStrings_Inner[s];
+                                        if (!(currentString.equals("(")) && !(currentString.equals(")")) && !(currentString.equals("||"))) {
+                                            currentString = currentString.replace("(", "");
+                                            currentString = currentString.replace(")", "");
+
+                                            for (int ln = 0; ln < label_names.size(); ln++) {
+                                                if (currentString.equals(label_names.get(ln))) {
+                                                    if (s == 0) {
+                                                        there_are_labeled_conditions = true;
+                                                    } else {
+                                                        if (arrOfConditionsStrings_Inner[0].contains("!")) {
+                                                            there_are_labeled_conditions_to_negate = true; //check if there is a negation in front of labeled condition
+                                                        }
+                                                    }
+
+                                                    for (int lc = 0; lc < label_conditions_to_work_with.get(ln).size(); lc++) {
+                                                        label_conditions_to_work_with_arraylist.add(label_conditions_to_work_with.get(ln).get(lc));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                for (int i = 0; i < conditions.size(); i++) {
+                                    String[] arrOfConditionsStrings = conditions.get(i).split(" ");
+
+                                    for (int j = 0; j < arrOfConditionsStrings.length; j++) {
+                                        String currentString = arrOfConditionsStrings[j];
+
+                                        if (!(arrOfConditionsStrings[j].equals("(")) && !(arrOfConditionsStrings[j].equals(")"))) {
+                                            currentString = currentString.replace("(", "");
+                                            currentString = currentString.replace(")", "");
+
+                                            String testCaseString = "";
+
+                                            boolean relation_string_has_been_traversed = false;
+
+                                            //check if 'currentString' is a labeled condition or not
+                                            boolean currentStringIsLabeledCondition = false;
+
+                                            for (int ln = 0; ln < label_names.size(); ln++) {
+                                                if (label_names.get(ln).equals(currentString)) {
+                                                    currentStringIsLabeledCondition = true;
+                                                }
+                                            }
+
+                                            if (!currentStringIsLabeledCondition) {
+                                                for (int char_i = 0; char_i < currentString.length(); char_i++) {
+                                                    if (currentString.charAt(char_i) == '=' || currentString.charAt(char_i) == '!') {
+                                                        if (testCaseString.length() > 0 && !testCaseStringTracker.contains(testCaseString)) {
+                                                            testCaseStringTracker.add(testCaseString);
+                                                        }
+
+                                                        testCaseString = "";
+                                                    } else {
+                                                        testCaseString += currentString.charAt(char_i);
+                                                    }
+
+                                                    if (char_i == currentString.length() - 1) {
+                                                        if (testCaseString.length() > 0 && !testCaseStringTracker.contains(testCaseString)) {
+                                                            testCaseStringTracker.add(testCaseString);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                                System.out.println("Printing all values in testCaseStringTracker:");
+                                for (int i = 0; i < testCaseStringTracker.size(); i++) {
+                                    System.out.println("testCaseStringTracker at index " + i + " is: " + testCaseStringTracker.get(i));
+                                }
+
+                                int[] testCaseValueTracker = new int[testCaseStringTracker.size()];
+                                boolean[] testCaseValueAssignedTracker = new boolean[testCaseStringTracker.size()];
+
+                                for (int i = 0; i < testCaseValueTracker.length; i++) {
+                                    testCaseValueTracker[i] = 0;
+                                    testCaseValueAssignedTracker[i] = false;
+                                }
+
+                                ArrayList<String> testCaseConditionStrings = new ArrayList<>();
+
+                                for (int i = 0; i < conditions.size(); i++) {
+                                    String[] arrOfConditionsStrings = conditions.get(i).split(" ");
+
+                                    for (int j = 0; j < arrOfConditionsStrings.length; j++) {
+                                        String currentString = arrOfConditionsStrings[j];
+
+                                        if (!(currentString.equals("(")) && !(currentString.equals(")")) && !(currentString.equals("(!"))) {
+                                            currentString = currentString.replace("(", "");
+                                            currentString = currentString.replace(")", "");
+
+                                            boolean currentStringIsLabeledCondition = false;
+
+                                            for (int ln = 0; ln < label_names.size(); ln++) {
+                                                if (currentString.equals(label_names.get(ln))) {
+                                                    currentStringIsLabeledCondition = true;
+                                                }
+                                            }
+
+                                            if (!currentStringIsLabeledCondition) {
+                                                testCaseConditionStrings.add(currentString);
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                                for (int i = 0; i < conditions.size(); i++) {
+                                    String[] arrOfConditionsStrings = conditions.get(i).split(" ");
+
+                                    for (int j = 0; j < arrOfConditionsStrings.length; j++) {
+                                        String currentConditionString = arrOfConditionsStrings[j];
+                                        boolean checkThisConditionString = false;
+
+                                        if (!arrOfConditionsStrings[j].equals("(") && !(arrOfConditionsStrings[j].equals(")"))) {
+                                            currentConditionString = currentConditionString.replace("(", "");
+                                            currentConditionString = currentConditionString.replace(")", "");
+
+                                            checkThisConditionString = true;
+                                        }
+
+                                        // check that 'currentConditionString' is not a labeled condition
+                                        for (int ln = 0; ln < label_names.size(); ln++) {
+                                            if (label_names.get(ln).equals(currentConditionString)) {
+                                                checkThisConditionString = false;
+                                            }
+                                        }
+
+                                        if (checkThisConditionString) {
+                                            //boolean isNotEmpty = false; (ignore this)
+
+                                            // have a helper variable that keeps track of the number of test case values that were assigned
+
+                                            int numOfTestCaseValuesAssigned = 0;
+
+                                            for (int b = 0; b < testCaseValueAssignedTracker.length; b++) {
+                                                if (testCaseValueAssignedTracker[b] == true) {
+                                                    numOfTestCaseValuesAssigned++;
+                                                }
+                                            }
+
+                                            //Need to get 'left_value', 'right_value', and 'relation'
+                                            String relation = ""; //ie. '==', '!='
+                                            String left_value_string = "";
+                                            String right_value_string = "";
+
+                                            boolean relation_string_has_been_traversed = false;
+
+                                            // check 'currentConditionString'
+                                            for (int char_i = 0; char_i < currentConditionString.length(); char_i++) { //This part appears good
+                                                if (currentConditionString.charAt(char_i) == '=' || currentConditionString.charAt(char_i) == '!') {
+                                                    relation += currentConditionString.charAt(char_i);
+                                                    relation_string_has_been_traversed = true;
+                                                } else {
+                                                    if (relation_string_has_been_traversed) {
+                                                        right_value_string += currentConditionString.charAt(char_i);
+                                                    } else {
+                                                        left_value_string += currentConditionString.charAt(char_i);
+                                                    }
+                                                }
+                                            }
+
+                                            if (numOfTestCaseValuesAssigned == 0) { // If 'numOfTestCaseValuesAssigned' == 0, then just generate random ints for the two specific values
+
+                                                int left_value = (int) (Math.random() * 10);
+                                                left_value += 1;
+
+                                                int right_value = 0;
+
+                                                if (relation.equals("!=")) {
+                                                    boolean two_values_are_not_equal = false;
+
+                                                    while(!two_values_are_not_equal) {
+                                                        right_value = (int) (Math.random() * 10);
+                                                        right_value += 1;
+
+                                                        if (left_value != right_value) {
+                                                            two_values_are_not_equal = true;
+                                                        }
+                                                    }
+                                                }
+
+                                                for (int tc = 0; tc < testCaseStringTracker.size(); tc++) {
+                                                    if (testCaseStringTracker.get(tc).equals(left_value_string)) {
+                                                        testCaseValueTracker[tc] = left_value;
+                                                        testCaseValueAssignedTracker[tc] = true;
+                                                    } else if (testCaseStringTracker.get(tc).equals(right_value_string)) {
+                                                        testCaseValueTracker[tc] = right_value;
+                                                        testCaseValueAssignedTracker[tc] = true;
+                                                    }
+                                                }
+
+                                                // add the left and right values to listOfTestData
+                                                for (int n = 0; n < table_column_values.size(); n++) {
+                                                    if (table_column_values.get(n).equals(left_value_string)) {
+                                                        listOfTestData.get(n).add(left_value);
+                                                    } else if (table_column_values.get(n).equals(right_value_string)) {
+                                                        listOfTestData.get(n).add(right_value);
+                                                    }
+                                                }
+
+                                            } else {
+
+                                                String testCaseStringToWorkWith = "";
+                                                int testDataInt = 0;
+
+                                                boolean all_conditions_satisfied = false;
+
+                                                // First use a while loop to check that generated value for specific test case satisfies all conditions
+                                                while(!all_conditions_satisfied) {
+                                                    all_conditions_satisfied = true;
+
+                                                    testCaseStringToWorkWith = "";
+
+                                                    // Generate some random int
+                                                    testDataInt  = (int) (Math.random() * 10);
+
+                                                    for (int tc = 0; tc < testCaseStringTracker.size(); tc++) {
+                                                        if (testCaseStringTracker.get(tc).equals(left_value_string)) {
+                                                            if (testCaseValueAssignedTracker[tc] == false) {
+                                                                testCaseStringToWorkWith = left_value_string;
+                                                            }
+                                                        } else if (testCaseStringTracker.get(tc).equals(right_value_string)) {
+                                                            if (testCaseValueAssignedTracker[tc] == false) {
+                                                                testCaseStringToWorkWith = right_value_string;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    // Conditions will be iterated using a for loop, to see if randomly-generated int satisfies all conditions
+                                                    for (int tc = 0; tc < testCaseConditionStrings.size(); tc++) { //'testCaseConditionStrings' contains the different possible test cases
+                                                        String relation_tccs = ""; //ie. '==', '!='
+                                                        String left_value_string_tccs = "";
+                                                        String right_value_string_tccs = "";
+
+                                                        boolean relation_tccs_string_has_been_traversed = false;
+
+                                                        // check 'currentConditionString'
+                                                        for (int char_i = 0; char_i < testCaseConditionStrings.get(tc).length(); char_i++) { //This part appears good
+                                                            if (testCaseConditionStrings.get(tc).charAt(char_i) == '=' || testCaseConditionStrings.get(tc).charAt(char_i) == '!') {
+                                                                relation_tccs += testCaseConditionStrings.get(tc).charAt(char_i);
+                                                                relation_tccs_string_has_been_traversed = true;
+                                                            } else {
+                                                                if (relation_tccs_string_has_been_traversed) {
+                                                                    right_value_string_tccs += testCaseConditionStrings.get(tc).charAt(char_i);
+                                                                } else {
+                                                                    left_value_string_tccs += testCaseConditionStrings.get(tc).charAt(char_i);
+                                                                }
+                                                            }
+                                                        }
+
+                                                        // For each condition, keep track of what is 'value1', 'value2', and 'relation'
+
+                                                        if (relation_tccs.equals("!=")) { // Check if 'relation' is '!='
+                                                            if (testCaseStringToWorkWith.equals(left_value_string_tccs)) {
+                                                                int right_value = 0;
+
+                                                                for (int tcst = 0; tcst < testCaseStringTracker.size(); tcst++) {
+                                                                    if (testCaseStringTracker.get(tcst).equals(right_value_string_tccs)) {
+                                                                        right_value = testCaseValueTracker[tcst];
+                                                                    }
+                                                                }
+
+                                                                if (testDataInt == right_value) {
+                                                                    all_conditions_satisfied = false;
+                                                                }
+
+                                                            } else if (testCaseStringToWorkWith.equals(right_value_string_tccs)) {
+                                                                int left_value = 0;
+
+                                                                for (int tcst = 0; tcst < testCaseStringTracker.size(); tcst++) {
+                                                                    if (testCaseStringTracker.get(tcst).equals(left_value_string_tccs)) {
+                                                                        left_value = testCaseValueTracker[tcst];
+                                                                    }
+                                                                }
+
+                                                                if (testDataInt == left_value) {
+                                                                    all_conditions_satisfied = false;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    // Check if there are labeled conditions to negate using 'there_are_labeled_conditions' and 'there_are_labeled_conditions_to_negate'
+                                                    if (there_are_labeled_conditions_to_negate) {
+                                                        for (int lca = 0; lca < label_conditions_to_work_with.size(); lca++) {
+                                                            for (int lc = 0; lc < label_conditions_to_work_with.get(lca).size(); lc++) {
+                                                                String[] arrOfLabelConditionString = label_conditions_to_work_with.get(lca).get(lc).split(" ");
+
+                                                                int leftSideOfInequality = 0;
+                                                                int rightSideOfInequality = 0;
+
+                                                                if (arrOfLabelConditionString[0].equals(testCaseStringToWorkWith)) {
+                                                                    leftSideOfInequality += testDataInt;
+                                                                } else {
+                                                                    for (int tcvt = 0; tcvt < testCaseStringTracker.size(); tcvt++) {
+                                                                        if (arrOfLabelConditionString[0].equals(testCaseStringTracker.get(tcvt))) {
+                                                                            leftSideOfInequality += testCaseValueTracker[tcvt];
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (arrOfLabelConditionString[2].equals(testCaseStringToWorkWith)) {
+                                                                    rightSideOfInequality += testDataInt;
+                                                                } else {
+                                                                    for (int tcvt = 0; tcvt < testCaseStringTracker.size(); tcvt++) {
+                                                                        if (arrOfLabelConditionString[2].equals(testCaseStringTracker.get(tcvt))) {
+                                                                            rightSideOfInequality += testCaseValueTracker[tcvt];
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (arrOfLabelConditionString.length > 3) {
+                                                                    for (int lcs = 3; lcs < arrOfLabelConditionString.length; lcs++) {
+                                                                        if (arrOfLabelConditionString[lcs].equals("+")) {
+                                                                            if (arrOfLabelConditionString[lcs + 1].equals(testCaseStringToWorkWith)) {
+                                                                                rightSideOfInequality += testDataInt;
+                                                                            } else {
+                                                                                for (int tcvt = 0; tcvt < testCaseStringTracker.size(); tcvt++) {
+                                                                                    if (arrOfLabelConditionString[lcs + 1].equals(testCaseStringTracker.get(tcvt))) {
+                                                                                        rightSideOfInequality += testCaseValueTracker[tcvt];
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (arrOfLabelConditionString[1].equals(">=")) {
+                                                                    if (leftSideOfInequality >= rightSideOfInequality) {
+                                                                        all_conditions_satisfied = false;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+
+                                                // Add to 'testCaseValueTracker' and 'testCaseValueAssignedTracker'
+                                                for (int tcs = 0; tcs < testCaseStringTracker.size(); tcs++) {
+                                                    if (testCaseStringTracker.get(tcs).equals(testCaseStringToWorkWith)) {
+                                                        testCaseValueTracker[tcs] = testDataInt;
+                                                        testCaseValueAssignedTracker[tcs] = true;
+                                                    }
+                                                }
+
+                                                // Add to 'listOfTestData' once generated value for specific test case satisfies all conditions
+                                                for (int n = 0; n < table_column_values.size(); n++) {
+                                                    if (table_column_values.get(n).equals(testCaseStringToWorkWith)) {
+                                                        listOfTestData.get(n).add(testDataInt);
+                                                    }
+                                                }
+                                            }
+
+                                            /*for (int tcv = 0; tcv < testCaseValueTracker.length; tcv++) { //This block of code may not work
+                                                if (testCaseValueTracker[tcv] != null) {
+                                                    isNotEmpty = true;
+                                                    break;
+                                                }
+                                            }*/
+
+                                        }
+                                    }
+                                }
 
                             } else {
                                 for (int i = 0; i < conditions.size(); i++) {
