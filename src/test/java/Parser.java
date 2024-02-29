@@ -56,6 +56,9 @@ public class Parser {
             boolean[] is_table_column_value_a_parameter = null;
             ArrayList<ArrayList<String>> listOfParameters = null;
 
+            ArrayList<String> set_names = new ArrayList<>();
+            ArrayList<ArrayList<String>> set_elements = new ArrayList<ArrayList<String>>();
+
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 String[] arrOfStr = data.trim().split(" ");
@@ -118,13 +121,11 @@ public class Parser {
                         is_table_column_value_a_parameter[i] = false;
                     }
                 } else if (arrOfStr[0].equals("@PARAMETER")) {
-                    //TODO
-
                     String parameter_name = arrOfStr[1].substring(1, arrOfStr[1].length()-1);
 
                     int index_of_parameter_name = 0;
 
-                    //TODO: Have a boolean data structure that keeps track of which table column is "Parameter" ('is_table_column_value_a_parameter')
+                    // Data structure of booleans that keeps track of which table column is "Parameter"
                     for (int i = 0; i < table_column_values.size(); i++) {
                         if (table_column_values.get(i).equals(parameter_name)) {
                             is_table_column_value_a_parameter[i] = true;
@@ -133,15 +134,9 @@ public class Parser {
                         }
                     }
 
-                    //TODO: Have another data structure that keeps track of the different parameters ('listOfParameters')
+                    // Data structure that keeps track of the different parameters
                     for (int i = 2; i < arrOfStr.length; i++) {
                         String currentParameterString = arrOfStr[i];
-                        
-                        /*if (i == 2) {
-                            
-                        } else {
-                            
-                        }*/
 
                         currentParameterString = currentParameterString.replace("{", "");
                         currentParameterString = currentParameterString.replace("}", "");
@@ -167,6 +162,34 @@ public class Parser {
                         }
                     }
 
+                } else if (arrOfStr[0].equals("@SET")) {
+                    String set_name = arrOfStr[1];
+
+                    set_names.add(set_name);
+
+                    set_elements.add(new ArrayList<String>());
+
+                    for (int i = 2; i < arrOfStr.length; i++) {
+                        String currentSetElementString = arrOfStr[i];
+
+                        currentSetElementString = currentSetElementString.replace("{", "");
+                        currentSetElementString = currentSetElementString.replace("}", "");
+                        currentSetElementString = currentSetElementString.replace(",", "");
+
+                        set_elements.get(set_elements.size() - 1).add(currentSetElementString);
+                    }
+
+                    System.out.println("Printing out all set string names in set_names");
+                    for (int i = 0; i < set_names.size(); i++) {
+                        System.out.println("set_names at index " + i + " is: " + set_names.get(i));
+                    }
+
+                    System.out.println("Printing out all elements in set_elements");
+                    for (int i = 0; i < set_elements.size(); i++) {
+                        for (int j = 0; j < set_elements.get(i).size(); j++) {
+                            System.out.println("set_elements[" + i + "][" + j + "] is " + set_elements.get(i).get(j));
+                        }
+                    }
                 } else if (arrOfStr[0].equals("@LABEL")) {
                     System.out.println("At @LABEL tag");
                     String current_label_name = arrOfStr[1];
