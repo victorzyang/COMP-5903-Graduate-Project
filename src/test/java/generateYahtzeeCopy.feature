@@ -22,3 +22,4 @@ Feature: Yahtzee scoring
     When Category is <Box>
     Then Score is <Score>
     Examples:
+      | D1 | D2 | D3 | D4 | D5 | Box | Score |

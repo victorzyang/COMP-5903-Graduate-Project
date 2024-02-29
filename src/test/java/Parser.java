@@ -53,6 +53,9 @@ public class Parser {
             boolean[] is_table_column_value_constrained = null;
             ArrayList<int[]> listOfConstraints = null;
 
+            boolean[] is_table_column_value_a_parameter = null;
+            ArrayList<ArrayList<String>> listOfParameters = null;
+
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 String[] arrOfStr = data.trim().split(" ");
@@ -90,6 +93,8 @@ public class Parser {
                     is_table_column_value_string = new boolean[num_of_table_columns];
                     is_table_column_value_constrained = new boolean[num_of_table_columns];
                     listOfConstraints = new ArrayList<int[]>(num_of_table_columns);
+                    is_table_column_value_a_parameter = new boolean[num_of_table_columns];
+                    listOfParameters = new ArrayList<ArrayList<String>>(num_of_table_columns);
 
                     System.out.println("Checking all elements in table_column_values arraylist");
                     for (int i = 1; i < arrOfStr.length; i++) {
@@ -99,6 +104,7 @@ public class Parser {
                             listOfTestData.add(new ArrayList<Integer>());
                             listOfStringTestData.add(new ArrayList<String>());
                             listOfConstraints.add(new int[2]);
+                            listOfParameters.add(new ArrayList<String>());
                         }
                     }
 
@@ -109,7 +115,58 @@ public class Parser {
                         listOfFixedValues[i] = 0;
                         is_table_column_value_string[i] = false;
                         is_table_column_value_constrained[i] = false;
+                        is_table_column_value_a_parameter[i] = false;
                     }
+                } else if (arrOfStr[0].equals("@PARAMETER")) {
+                    //TODO
+
+                    String parameter_name = arrOfStr[1].substring(1, arrOfStr[1].length()-1);
+
+                    int index_of_parameter_name = 0;
+
+                    //TODO: Have a boolean data structure that keeps track of which table column is "Parameter" ('is_table_column_value_a_parameter')
+                    for (int i = 0; i < table_column_values.size(); i++) {
+                        if (table_column_values.get(i).equals(parameter_name)) {
+                            is_table_column_value_a_parameter[i] = true;
+
+                            index_of_parameter_name = i;
+                        }
+                    }
+
+                    //TODO: Have another data structure that keeps track of the different parameters ('listOfParameters')
+                    for (int i = 2; i < arrOfStr.length; i++) {
+                        String currentParameterString = arrOfStr[i];
+                        
+                        /*if (i == 2) {
+                            
+                        } else {
+                            
+                        }*/
+
+                        currentParameterString = currentParameterString.replace("{", "");
+                        currentParameterString = currentParameterString.replace("}", "");
+                        currentParameterString = currentParameterString.replace("'", "");
+                        currentParameterString = currentParameterString.replace("'", "");
+                        currentParameterString = currentParameterString.replace(",", "");
+
+                        listOfParameters.get(index_of_parameter_name).add(currentParameterString);
+                    }
+
+                    System.out.println("Printing out all booleans in is_table_column_value_a_parameter");
+                    for (int i = 0; i < is_table_column_value_a_parameter.length; i++) {
+                        System.out.println("is_table_column_value_a_parameter at index " + i + " is: " + is_table_column_value_a_parameter[i]);
+                    }
+
+                    System.out.println("Printing out all parameters in listOfParameters");
+                    for (int i = 0; i < listOfParameters.size(); i++) {
+                        if (!listOfParameters.get(i).isEmpty()) {
+                            System.out.println("Printing out all parameters in listOfParameters.get(" + i + ")");
+                            for (int j = 0; j < listOfParameters.get(i).size(); j++) {
+                                System.out.println("listOfParameters[" + i + "][" + j + "] is " + listOfParameters.get(i).get(j));
+                            }
+                        }
+                    }
+
                 } else if (arrOfStr[0].equals("@LABEL")) {
                     System.out.println("At @LABEL tag");
                     String current_label_name = arrOfStr[1];
