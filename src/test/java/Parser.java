@@ -268,6 +268,71 @@ public class Parser {
 
                 } else if (arrOfStr[0].equals("@BVA")) {
                     generateAtBoundaryValues = true;
+                } else if (arrOfStr[0].equals("@CATEGORY")) {
+                    //TODO
+
+                    //Check second string which contains "(" or ")"
+                    String second_string = arrOfStr[2];
+
+                    if (second_string.contains("COMBINATION")) {
+                        //TODO: @ConstrainedValue (x >=1) & (x <=6) for {D1, D2, D3, D4, D5}
+
+                        String[] arrOfSecondStringWithoutCOMBINATION = second_string.split("COMBINATION");
+
+                        System.out.println("Printing out all elements in arrOfSecondStringWithoutCOMBINATION");
+                        for (int i = 0; i < arrOfSecondStringWithoutCOMBINATION.length; i++) {
+                            System.out.println("arrOfSecondStringWithoutCOMBINATION at index " + i + " is: " + arrOfSecondStringWithoutCOMBINATION[i]);
+                        }
+
+                        if (isAnInteger(arrOfSecondStringWithoutCOMBINATION[0])) {
+                            int numOfCombinations = Integer.parseInt(arrOfSecondStringWithoutCOMBINATION[0]);
+
+                            int[] occurences = new int[numOfCombinations];
+                            int[] specificCombinationValues = new int[numOfCombinations]; //TODO: maybe this should be an arraylist?
+
+                            System.out.println("numOfCombinations is: " + numOfCombinations); //This is good
+
+                            String secondStringAfterCOMBINATION = arrOfSecondStringWithoutCOMBINATION[1];
+                            secondStringAfterCOMBINATION = secondStringAfterCOMBINATION.replace("(", "");
+                            secondStringAfterCOMBINATION = secondStringAfterCOMBINATION.replace(")", "");
+
+                            String[] arrOfSecondStringAfterCOMBINATION = secondStringAfterCOMBINATION.split(",");
+
+                            for (int i = 0; i < numOfCombinations; i++) {
+                                // i times 2 & i times 2 + 1
+
+                                occurences[i] = Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2]);
+                                specificCombinationValues[i] = Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]);
+
+                                //TODO: take care of '_' cases later
+                            }
+
+                            System.out.println("Printing all elements in occurences");
+                            for (int i = 0; i < occurences.length; i++) {
+                                System.out.println("occurences[" + i + "]: " + occurences[i]);
+                            }
+
+                            System.out.println("Printing all elements in specificCombinationValues");
+                            for (int i = 0; i < specificCombinationValues.length; i++) {
+                                System.out.println("specificCombinationValues[" + i + "]: " + specificCombinationValues[i]);
+                            }
+
+                            //TODO: Take care of 'SMALLSEQUENCE' and 'LONGSEQUENCE' later...
+                        } else {
+                            if (arrOfSecondStringWithoutCOMBINATION[0].equals("RANDOM_")) {
+                                //TODO
+
+                                //Split commas in the ...COMBINATION()
+                            }
+                        }
+
+                        //TODO: third string and beyond
+
+                    }
+
+                    //Have a data structure that keeps track of the number of occurrences of a particular value in combination
+
+                    //Have another data structure that keeps track of particular values to be included in combination
                 } else if (arrOfStr[0].equals("@IF")) {
                     //System.out.println("generateAtBoundaryValues is " + generateAtBoundaryValues);
 
@@ -1645,5 +1710,14 @@ public class Parser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean isAnInteger(String str) {
+        try {
+            int i = Integer.parseInt(str);
+        } catch (NumberFormatException numberFormatException) {
+            return false;
+        }
+        return true;
     }
 }
