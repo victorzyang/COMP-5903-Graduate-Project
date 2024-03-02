@@ -266,6 +266,55 @@ public class Parser {
                         System.out.println("listOfConstraints[i][1]: " + listOfConstraints.get(i)[1]);
                     }*/
 
+                } else if (arrOfStr[0].equals("@ConstrainedValue")) {
+
+                    //Need to parse the data structure after 'for'
+                    ArrayList<String> list_of_constrained_columns = new ArrayList<String>();
+
+                    for (int i = 9; i < arrOfStr.length; i++) {
+                        String constrainedColumn = arrOfStr[i];
+                        constrainedColumn = constrainedColumn.replace("{", "");
+                        constrainedColumn = constrainedColumn.replace("}", "");
+                        constrainedColumn = constrainedColumn.replace(",", "");
+
+                        list_of_constrained_columns.add(constrainedColumn);
+                    }
+
+                    String thirdStringAfterAnnotation = arrOfStr[3];
+                    int int1 = Integer.parseInt(thirdStringAfterAnnotation.replace(")", ""));
+
+                    String seventhStringAfterAnnotation = arrOfStr[7];
+                    int int2 = Integer.parseInt(seventhStringAfterAnnotation.replace(")", ""));
+
+                    String symbol1 = arrOfStr[2];
+
+                    String symbol2 = arrOfStr[6];
+
+                    for (int i = 0; i < table_column_values.size(); i++) {
+                        //TODO
+                        if (list_of_constrained_columns.contains(table_column_values.get(i))) {
+                            //TODO: 'is_table_column_value_constrained' and 'listOfConstraints'
+                            is_table_column_value_constrained[i] = true;
+
+                            if (symbol1.equals(">=")) {
+                                listOfConstraints.get(i)[0] = int1;
+                            }
+
+                            if (symbol2.equals("<=")) {
+                                listOfConstraints.get(i)[1] = int2;
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < table_column_values.size(); i++) {
+                        System.out.println("Table column at index " + i + " is: " + table_column_values.get(i));
+                        System.out.println("is_table_column_value_constrained at index " + i + " is: " + is_table_column_value_constrained[i]);
+                    }
+
+                    for (int i = 0; i < listOfConstraints.size(); i++) {
+                        System.out.println("listOfConstraints[" + i + "][0]: " + listOfConstraints.get(i)[0]);
+                        System.out.println("listOfConstraints[" + i + "][1]: " + listOfConstraints.get(i)[1]);
+                    }
                 } else if (arrOfStr[0].equals("@BVA")) {
                     generateAtBoundaryValues = true;
                 } else if (arrOfStr[0].equals("@CATEGORY")) {

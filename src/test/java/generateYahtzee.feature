@@ -4,6 +4,7 @@ Feature: Yahtzee scoring
   @Table | D1 | D2 | D3 | D4 | D5 | Box | Score |
   @PARAMETER 'Box' {'ONES', 'TWOS', 'THREES', 'FOURS', 'FIVES', 'SIXES', '3OfAKind', '4OfAKind', 'FULLHOUSE', 'SMALLSEQ', 'LARGESEQ', 'YAHTZEE', 'CHANCE'}
   @SET 5DICE {D1, D2, D3, D4, D5}
+  @ConstrainedValue (x >= 1) & (x <= 6) for {D1, D2, D3, D4, D5}
   @CATEGORY 'Score1Five' 1COMBINATION(1,5) IN 5DICE 'Box' 'FIVES' 'Score' 5
   @CATEGORY 'Score2Fours' 1COMBINATION(2,4) IN 5DICE 'Box' 'FOURS' 'Score' 8
   @CATEGORY 'Score3Ones' 1COMBINATION(3,1) IN 5DICE 'Box' 'ONES' 'Score' 3
