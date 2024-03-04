@@ -337,7 +337,8 @@ public class Parser {
                             int numOfCombinations = Integer.parseInt(arrOfSecondStringWithoutCOMBINATION[0]);
 
                             int[] occurences = new int[numOfCombinations];
-                            int[] specificCombinationValues = new int[numOfCombinations]; //TODO: maybe this should be an arraylist?
+                            //int[] specificCombinationValues = new int[numOfCombinations]; //TODO: maybe this should be an arraylist?
+                            ArrayList<Integer> specificCombinationValues = new ArrayList<>();
 
                             System.out.println("numOfCombinations is: " + numOfCombinations); //This is good
 
@@ -351,7 +352,12 @@ public class Parser {
                                 // i times 2 & i times 2 + 1
 
                                 occurences[i] = Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2]);
-                                specificCombinationValues[i] = Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]);
+                                //specificCombinationValues[i] = Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]);
+                                specificCombinationValues.add(Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]));
+
+                                //TODO: check set
+
+                                //TODO: check table and parameter
 
                                 //TODO: take care of '_' cases later
                             }
@@ -362,8 +368,108 @@ public class Parser {
                             }
 
                             System.out.println("Printing all elements in specificCombinationValues");
-                            for (int i = 0; i < specificCombinationValues.length; i++) {
-                                System.out.println("specificCombinationValues[" + i + "]: " + specificCombinationValues[i]);
+                            for (int i = 0; i < specificCombinationValues.size()/*length*/; i++) {
+                                System.out.println("specificCombinationValues[" + i + "]: " + specificCombinationValues.get(i));
+                            }
+
+                            String thirdString = arrOfStr[3];
+                            String fourthString = arrOfStr[4];
+
+                            // Helper data structures to keep track of all the values to be randomly assigned
+                            int[] set_values = null;
+                            boolean[] has_set_value_been_assigned = null;
+
+                            //Have another set_elements data structure
+                            ArrayList<String> set_elements_to_work_with = null;
+
+                            //int set_elements_index = 0; //?
+
+                            //TODO: randomly select 'occurences[i]' indices
+
+                            if (thirdString.equals("IN") && set_names.contains(fourthString)) {
+                                //TODO: check set
+                                for (int sn = 0; sn < set_names.size(); sn++) {
+                                    if (set_names.get(sn).equals(fourthString)) {
+                                        set_elements_to_work_with = set_elements.get(sn);
+
+                                        set_values = new int[set_elements.get(sn).size()];
+                                        has_set_value_been_assigned = new boolean[set_elements.get(sn).size()];
+
+                                        for (int se = 0; se < set_elements.get(sn).size(); se++) {
+                                            set_values[se] = 0;
+                                            has_set_value_been_assigned[se] = false;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (set_names.contains(fourthString)) {
+                                //TODO
+                                for (int o = 0; o < occurences.length; o++) {
+                                    int numOfCombinationValuesAssigned = 0; //TODO?
+                                    while (numOfCombinationValuesAssigned != occurences[o]) {
+                                        //TODO: generate a random int from 0 to set_values.length-1
+                                        int randomIndex = (int) (Math.random() * set_values.length);
+
+                                        //TODO
+                                        if (!has_set_value_been_assigned[randomIndex]) {
+                                            //set_values[randomIndex] = specificCombinationValues[o];
+                                            set_values[randomIndex] = specificCombinationValues.get(o);
+                                            has_set_value_been_assigned[randomIndex] = true;
+
+                                            numOfCombinationValuesAssigned++;
+                                        }
+                                    }
+                                }
+
+                                for (int sv = 0; sv < set_values.length; sv++) {
+                                    if (!has_set_value_been_assigned[sv]) {
+                                        int table_index_of_set_element = 0;
+
+                                        //for loop
+                                        for (int tc = 0; tc < table_column_values.size(); tc++) {
+                                            if (table_column_values.get(tc).equals(set_elements_to_work_with.get(sv))) {
+                                                table_index_of_set_element = tc;
+                                            }
+                                        }
+
+                                        //TODO: assign random ints to any unassigned set element
+
+                                        int constraint1 /*= 0*/;
+                                        int constraint2 /*= 0*/;
+
+                                        //TODO: 'is_table_column_value_constrained' and 'list_of_constraints'
+                                        if (is_table_column_value_constrained[table_index_of_set_element]) {
+                                            constraint1 = listOfConstraints.get(table_index_of_set_element)[0];
+                                            constraint2 = listOfConstraints.get(table_index_of_set_element)[1];
+
+                                            int random_set_value = (int) ((Math.random() * (constraint2 - constraint1)) + constraint1);
+
+                                            if (!specificCombinationValues.contains(random_set_value)) {
+                                                set_values[sv] = random_set_value;
+                                                has_set_value_been_assigned[sv] = true;
+                                            } else {
+                                                while (specificCombinationValues.contains(random_set_value)) {
+                                                    random_set_value = (int) ((Math.random() * (constraint2 - constraint1)) + constraint1);
+                                                }
+
+                                                set_values[sv] = random_set_value;
+                                                has_set_value_been_assigned[sv] = true;
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            System.out.println("Printing all elements in set_values");
+                            for (int sv = 0; sv < set_values.length; sv++) {
+                                System.out.println("set_values at index " + sv + ": " + set_values[sv]);
+                            }
+
+                            System.out.println("Printing all elements in has_set_value_been_assigned");
+                            for (int h = 0; h < has_set_value_been_assigned.length; h++) {
+                                System.out.println("has_set_value_been_assigned at index " + h + ": " + has_set_value_been_assigned[h]);
                             }
 
                             //TODO: Take care of 'SMALLSEQUENCE' and 'LONGSEQUENCE' later...
