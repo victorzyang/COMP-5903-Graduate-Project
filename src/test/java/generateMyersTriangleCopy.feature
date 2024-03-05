@@ -21,20 +21,20 @@ Feature: Myer’s triangle problem
     Then Type of triangle is <msg>
     Examples:
       | a | b | c | msg |
-      | -10 | 10 | 5 | size < 1 |
-      | 0 | 5 | 5 | size < 1 |
-      | 4 | -1 | 7 | size < 1 |
-      | 8 | 0 | 6 | size < 1 |
-      | 2 | 4 | -9 | size < 1 |
-      | 3 | 5 | 0 | size < 1 |
-      | 16 | 8 | 8 | not a triangle |
-      | 24 | 8 | 8 | not a triangle |
-      | 1 | 4 | 3 | not a triangle |
-      | 1 | 8 | 6 | not a triangle |
-      | 10 | 6 | 16 | not a triangle |
-      | 5 | 8 | 18 | not a triangle |
-      | 10 | 10 | 10 | equilateral triangle |
-      | 9 | 9 | 6 | isoceles triangle |
-      | 5 | 2 | 5 | isoceles triangle |
-      | 2 | 3 | 3 | isoceles triangle |
-      | 6 | 2 | 7 | scalene triangle |
+      | -2 | 9 | 7 | size < 1 |
+      | 0 | 4 | 2 | size < 1 |
+      | 10 | -2 | 5 | size < 1 |
+      | 4 | 0 | 3 | size < 1 |
+      | 5 | 10 | -5 | size < 1 |
+      | 9 | 3 | 0 | size < 1 |
+      | 10 | 2 | 8 | not a triangle |
+      | 18 | 4 | 9 | not a triangle |
+      | 3 | 12 | 9 | not a triangle |
+      | 10 | 26 | 6 | not a triangle |
+      | 5 | 6 | 11 | not a triangle |
+      | 4 | 7 | 13 | not a triangle |
+      | 7 | 7 | 7 | equilateral triangle |
+      | 4 | 4 | 3 | isoceles triangle |
+      | 7 | 6 | 7 | isoceles triangle |
+      | 8 | 10 | 10 | isoceles triangle |
+      | 9 | 8 | 7 | scalene triangle |

@@ -44,7 +44,8 @@ public class Parser {
 
             boolean generateAtBoundaryValues = false;
 
-            ArrayList<ArrayList<Integer>> listOfTestData = null;
+            ArrayList<ArrayList<String>> listOfTestData = null;
+            //ArrayList<ArrayList<Integer>> listOfTestData = null;
 
             //TODO: have a data structure for all test data that are string
             ArrayList<ArrayList<String>> listOfStringTestData = null;
@@ -91,7 +92,8 @@ public class Parser {
                     listOfFixedValues = new int[num_of_table_columns];
                     label_names = new ArrayList<String>();
                     label_conditions = new ArrayList<ArrayList<String>>();
-                    listOfTestData = new ArrayList<ArrayList<Integer>>(num_of_table_columns);
+                    listOfTestData = new ArrayList<ArrayList<String>>(num_of_table_columns);
+                    //listOfTestData = new ArrayList<ArrayList<Integer>>(num_of_table_columns);
                     listOfStringTestData = new ArrayList<ArrayList<String>>(num_of_table_columns);
                     is_table_column_value_string = new boolean[num_of_table_columns];
                     is_table_column_value_constrained = new boolean[num_of_table_columns];
@@ -104,7 +106,8 @@ public class Parser {
                         if (!arrOfStr[i].equals("|")) {
                             System.out.println("arrOfStr at index " + i + " is: " + arrOfStr[i]);
                             table_column_values.add(arrOfStr[i]);
-                            listOfTestData.add(new ArrayList<Integer>());
+                            listOfTestData.add(new ArrayList<String>());
+                            //listOfTestData.add(new ArrayList<Integer>());
                             listOfStringTestData.add(new ArrayList<String>());
                             listOfConstraints.add(new int[2]);
                             listOfParameters.add(new ArrayList<String>());
@@ -333,6 +336,24 @@ public class Parser {
                             System.out.println("arrOfSecondStringWithoutCOMBINATION at index " + i + " is: " + arrOfSecondStringWithoutCOMBINATION[i]);
                         }
 
+                        //TODO
+                        ArrayList<String> listOfTableColumnNamesAfterCombination = new ArrayList<>();
+                        ArrayList<String> listOfTableColumnValuesAfterCombaintion = new ArrayList<>();
+
+                        for (int i = 5; i < arrOfStr.length; i+=2) {
+                            String currentTableColumnName = arrOfStr[i];
+                            currentTableColumnName = currentTableColumnName.replace("'", "");
+                            currentTableColumnName = currentTableColumnName.replace("'", "");
+
+                            listOfTableColumnNamesAfterCombination.add(currentTableColumnName);
+
+                            String currentTableColumnValue = arrOfStr[i+1];
+                            currentTableColumnValue = currentTableColumnValue.replace("'", "");
+                            currentTableColumnValue = currentTableColumnValue.replace("'", "");
+
+                            listOfTableColumnValuesAfterCombaintion.add(currentTableColumnValue);
+                        }
+
                         if (isAnInteger(arrOfSecondStringWithoutCOMBINATION[0])) {
                             int numOfCombinations = Integer.parseInt(arrOfSecondStringWithoutCOMBINATION[0]);
 
@@ -472,6 +493,34 @@ public class Parser {
                                 System.out.println("has_set_value_been_assigned at index " + h + ": " + has_set_value_been_assigned[h]);
                             }
 
+                            //TODO: add to 'listOfTestData' using 'set_names' and 'set_values'
+                            for (int n = 0; n < table_column_values.size(); n++) {
+                                if (set_elements_to_work_with.contains(table_column_values.get(n))) {
+                                    for (int se = 0; se < set_elements_to_work_with.size(); se++) {
+                                        if (set_elements_to_work_with.get(se).equals(table_column_values.get(n))) {
+                                            listOfTestData.get(n).add("" + set_values[se]);
+
+                                            break;
+                                        }
+                                    }
+                                } else {
+
+                                    for (int tc = 0; tc < listOfTableColumnNamesAfterCombination.size(); tc++) {
+                                        if (listOfTableColumnNamesAfterCombination.get(tc).equals(table_column_values.get(n))) {
+                                            listOfTestData.get(n).add("" + listOfTableColumnValuesAfterCombaintion.get(tc));
+
+                                            break;
+                                        }
+                                    }
+
+                                    //TODO
+
+                                    //Check that table column value is a parameter
+
+                                    //Check that table column value is a function to be called
+                                }
+                            }
+
                             //TODO: Take care of 'SMALLSEQUENCE' and 'LONGSEQUENCE' later...
                         } else {
                             if (arrOfSecondStringWithoutCOMBINATION[0].equals("RANDOM_")) {
@@ -482,6 +531,12 @@ public class Parser {
                         }
 
                         //TODO: third string and beyond
+
+                        /*for (int i = 0; i < listOfTestData.size(); i++) {
+                            for (int j = 0; j < listOfTestData.size(); j++) {
+                                System.out.println("listOfTestData[" + i + "][" + j + "]: " + listOfTestData.get(i).get(j));
+                            }
+                        }*/
 
                     }
 
@@ -547,19 +602,19 @@ public class Parser {
                                     String boundaryString = arrOfStr[3].replace(")", "");
 
                                     if (arrOfStr[2].equals("<")) {
-                                        listOfTestData.get(i).add((int) (Math.random() * (Integer.parseInt(boundaryString) - 1)));
+                                        listOfTestData.get(i).add("" + ((int) (Math.random() * (Integer.parseInt(boundaryString) - 1))));
 
                                         numOfTestCases++;
                                     } else if (arrOfStr[2].equals("<=")) {
-                                        listOfTestData.get(i).add(Integer.parseInt(boundaryString) - (int) ((Math.random() * 10) + 1));
-                                        listOfTestData.get(i).add(Integer.parseInt(boundaryString));
+                                        listOfTestData.get(i).add("" + (Integer.parseInt(boundaryString) - (int) ((Math.random() * 10) + 1)));
+                                        listOfTestData.get(i).add("" + Integer.parseInt(boundaryString));
 
                                         //TODO: check for the other table columns without fixed data?
                                         for (int j = 0; j < table_column_values.size(); j++) {
                                             if (!table_column_values.get(j).equals(tableColumnName) && !table_column_values.get(j).equals(resultTableColumnName)) {
                                                 if (!is_table_column_value_fixed[j]) {
-                                                    listOfTestData.get(j).add((int) (Math.random() * 10) + 1);
-                                                    listOfTestData.get(j).add((int) (Math.random() * 10) + 1);
+                                                    listOfTestData.get(j).add("" + ((int) (Math.random() * 10) + 1));
+                                                    listOfTestData.get(j).add("" + ((int) (Math.random() * 10) + 1));
                                                 }
                                             }
                                         }
@@ -578,10 +633,10 @@ public class Parser {
                                         if (is_table_column_value_constrained[i]) {
                                             int boundaryInt = Integer.parseInt(boundaryString);
                                             int number = random.nextInt(listOfConstraints.get(i)[1] - boundaryInt) + boundaryInt;
-                                            listOfTestData.get(i).add(number);
+                                            listOfTestData.get(i).add("" + number);
                                         } else {
                                             int number = Math.abs(random.nextInt());
-                                            listOfTestData.get(i).add(number + Integer.parseInt(boundaryString));
+                                            listOfTestData.get(i).add("" + (number + Integer.parseInt(boundaryString)));
                                         }
 
                                         numOfTestCases++; //TODO: revise this
@@ -610,10 +665,10 @@ public class Parser {
 
                                     if (lastStringIsAnInt) {
                                         if (arrOfStr[2].equals("<=")) {
-                                            listOfTestData.get(i).add(Integer.parseInt(arrOfStr[7]));
-                                            listOfTestData.get(i).add(Integer.parseInt(arrOfStr[7]));
+                                            listOfTestData.get(i).add("" + Integer.parseInt(arrOfStr[7]));
+                                            listOfTestData.get(i).add("" + Integer.parseInt(arrOfStr[7]));
                                         } else {
-                                            listOfTestData.get(i).add(Integer.parseInt(arrOfStr[7]));
+                                            listOfTestData.get(i).add("" + Integer.parseInt(arrOfStr[7]));
                                         }
                                     } else {
                                         if (arrOfStr[7].charAt(0) == '‘') {
@@ -644,10 +699,10 @@ public class Parser {
                                             for (int j = 0; j < table_column_values.size(); j++) {
                                                 if (table_column_values.get(j).equals(arrOfStr[7])) {
                                                     if (arrOfStr[2].equals("<=")) {
-                                                        listOfTestData.get(i).add(listOfFixedValues[j]);
-                                                        listOfTestData.get(i).add(listOfFixedValues[j]);
+                                                        listOfTestData.get(i).add("" + listOfFixedValues[j]);
+                                                        listOfTestData.get(i).add("" + listOfFixedValues[j]);
                                                     } else {
-                                                        listOfTestData.get(i).add(listOfFixedValues[j]);
+                                                        listOfTestData.get(i).add("" + listOfFixedValues[j]);
                                                     }
                                                 }
                                             }
@@ -680,7 +735,7 @@ public class Parser {
                                 for (int i = 0; i < table_column_values.size(); i++) {
                                     if (table_column_values.get(i).equals(tableColumnName) || table_column_values.get(i).equals(tableColumnName2)
                                         || table_column_values.get(i).equals(tableColumnName3)) {
-                                        listOfTestData.get(i).add(testDataInt);
+                                        listOfTestData.get(i).add("" + testDataInt);
                                         //numOfTestCases++; //TODO: Maybe this should be moved outside the for loop?
                                     }
                                 }
@@ -697,11 +752,11 @@ public class Parser {
 
                                 for (int i = 0; i < table_column_values.size(); i++) {
                                     if (table_column_values.get(i).equals(tableColumnName)) {
-                                        listOfTestData.get(i).add(int1);
+                                        listOfTestData.get(i).add("" + int1);
                                     } else if (table_column_values.get(i).equals(tableColumnName2)) {
-                                        listOfTestData.get(i).add(int2);
+                                        listOfTestData.get(i).add("" + int2);
                                     } else if (table_column_values.get(i).equals(tableColumnName3)) {
-                                        listOfTestData.get(i).add(int3);
+                                        listOfTestData.get(i).add("" + int3);
                                     }
                                 }
 
@@ -715,11 +770,11 @@ public class Parser {
 
                                 for (int i = 0; i < table_column_values.size(); i++) {
                                     if (table_column_values.get(i).equals(tableColumnName)) {
-                                        listOfTestData.get(i).add(int4);
+                                        listOfTestData.get(i).add("" + int4);
                                     } else if (table_column_values.get(i).equals(tableColumnName2)) {
-                                        listOfTestData.get(i).add(int5);
+                                        listOfTestData.get(i).add("" + int5);
                                     } else if (table_column_values.get(i).equals(tableColumnName3)) {
-                                        listOfTestData.get(i).add(int6);
+                                        listOfTestData.get(i).add("" + int6);
                                     }
                                 }
 
@@ -803,14 +858,14 @@ public class Parser {
                                     if (table_column_values.get(i).equals(tableColumnName)) {
                                         if (arrOfStr[2].equals(">=") && secondBoundaryString.charAt(1) != '=') {
                                             for (int j = Integer.parseInt(firstBoundaryString); j < Integer.parseInt(secondBoundaryString.substring(1)); j++) {
-                                                listOfTestData.get(i).add(j);
+                                                listOfTestData.get(i).add("" + j);
                                                 numOfTestCases++;
                                             }
                                         }
                                     } else if (table_column_values.get(i).equals(resultTableColumnName)) {
                                         if (arrOfStr[2].equals(">=") && secondBoundaryString.charAt(1) != '=') {
                                             for (int j = Integer.parseInt(firstBoundaryString); j < Integer.parseInt(secondBoundaryString.substring(1)); j++) {
-                                                listOfTestData.get(i).add((int) (listOfFixedValues[listOfFixedValuesIndex] * Double.parseDouble(arrOfStr[12])));
+                                                listOfTestData.get(i).add("" + ((int) (listOfFixedValues[listOfFixedValuesIndex] * Double.parseDouble(arrOfStr[12]))));
                                             }
                                         }
                                     }
@@ -1100,9 +1155,9 @@ public class Parser {
                                                 // add the left and right values to listOfTestData
                                                 for (int n = 0; n < table_column_values.size(); n++) {
                                                     if (table_column_values.get(n).equals(left_value_string)) {
-                                                        listOfTestData.get(n).add(left_value);
+                                                        listOfTestData.get(n).add("" + left_value);
                                                     } else if (table_column_values.get(n).equals(right_value_string)) {
-                                                        listOfTestData.get(n).add(right_value);
+                                                        listOfTestData.get(n).add("" + right_value);
                                                     }
                                                 }
 
@@ -1255,7 +1310,7 @@ public class Parser {
                                                 // Add to 'listOfTestData' once generated value for specific test case satisfies all conditions
                                                 for (int n = 0; n < table_column_values.size(); n++) {
                                                     if (table_column_values.get(n).equals(testCaseStringToWorkWith)) {
-                                                        listOfTestData.get(n).add(testDataInt);
+                                                        listOfTestData.get(n).add("" + testDataInt);
                                                     }
                                                 }
                                             }
@@ -1513,9 +1568,9 @@ public class Parser {
                                                                                             // add to listOfTestData
                                                                                             for (int n = 0; n < table_column_values.size(); n++) {
                                                                                                 if (table_column_values.get(n).equals(value1) || table_column_values.get(n).equals(value2)) {
-                                                                                                    listOfTestData.get(n).add(value1Int);
+                                                                                                    listOfTestData.get(n).add("" + value1Int);
                                                                                                 } else if (table_column_values.get(n).equals(current_value_being_checked)) {
-                                                                                                    listOfTestData.get(n).add(testDataInt_Inner);
+                                                                                                    listOfTestData.get(n).add("" + testDataInt_Inner);
                                                                                                 }
                                                                                             }
                                                                                             
@@ -1597,9 +1652,9 @@ public class Parser {
                                                                                             // add to listOfTestData
                                                                                             for (int n = 0; n < table_column_values.size(); n++) {
                                                                                                 if (table_column_values.get(n).equals(value1) || table_column_values.get(n).equals(value2)) {
-                                                                                                    listOfTestData.get(n).add(value1Int);
+                                                                                                    listOfTestData.get(n).add("" + value1Int);
                                                                                                 } else if (table_column_values.get(n).equals(current_value_being_checked)) {
-                                                                                                    listOfTestData.get(n).add(testDataInt_Inner);
+                                                                                                    listOfTestData.get(n).add("" + testDataInt_Inner);
                                                                                                 }
                                                                                             }
 
@@ -1678,9 +1733,9 @@ public class Parser {
                                                                                             // add to listOfTestData
                                                                                             for (int n = 0; n < table_column_values.size(); n++) {
                                                                                                 if (table_column_values.get(n).equals(value1) || table_column_values.get(n).equals(value2)) {
-                                                                                                    listOfTestData.get(n).add(value1Int);
+                                                                                                    listOfTestData.get(n).add("" + value1Int);
                                                                                                 } else if (table_column_values.get(n).equals(current_value_being_checked)) {
-                                                                                                    listOfTestData.get(n).add(testDataInt_Inner);
+                                                                                                    listOfTestData.get(n).add("" + testDataInt_Inner);
                                                                                                 }
                                                                                             }
 
