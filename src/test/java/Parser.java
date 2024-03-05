@@ -505,19 +505,28 @@ public class Parser {
                                     }
                                 } else {
 
-                                    for (int tc = 0; tc < listOfTableColumnNamesAfterCombination.size(); tc++) {
-                                        if (listOfTableColumnNamesAfterCombination.get(tc).equals(table_column_values.get(n))) {
-                                            listOfTestData.get(n).add("" + listOfTableColumnValuesAfterCombaintion.get(tc));
+                                    if (is_table_column_value_a_parameter[n]) { //Check that table column value is a parameter
+                                        for (int tc = 0; tc < listOfTableColumnNamesAfterCombination.size(); tc++) {
+                                            if (listOfTableColumnNamesAfterCombination.get(tc).equals(table_column_values.get(n))) {
+                                                listOfTestData.get(n).add("" + listOfTableColumnValuesAfterCombaintion.get(tc));
 
-                                            break;
+                                                break;
+                                            }
+                                        }
+                                    } else {
+                                        for (int tc = 0; tc < listOfTableColumnNamesAfterCombination.size(); tc++) {
+                                            if (listOfTableColumnNamesAfterCombination.get(tc).equals(table_column_values.get(n))) {
+                                                if (isAnInteger(listOfTableColumnValuesAfterCombaintion.get(tc))) {
+                                                    listOfTestData.get(n).add("" + listOfTableColumnValuesAfterCombaintion.get(tc));
+                                                } else {
+                                                    //TODO: Check that table column value is a function to be called
+                                                }
+
+                                                break;
+                                            }
                                         }
                                     }
 
-                                    //TODO
-
-                                    //Check that table column value is a parameter
-
-                                    //Check that table column value is a function to be called
                                 }
                             }
 
@@ -531,12 +540,6 @@ public class Parser {
                         }
 
                         //TODO: third string and beyond
-
-                        /*for (int i = 0; i < listOfTestData.size(); i++) {
-                            for (int j = 0; j < listOfTestData.size(); j++) {
-                                System.out.println("listOfTestData[" + i + "][" + j + "]: " + listOfTestData.get(i).get(j));
-                            }
-                        }*/
 
                     }
 
