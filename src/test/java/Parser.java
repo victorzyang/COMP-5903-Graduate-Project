@@ -340,18 +340,60 @@ public class Parser {
                         ArrayList<String> listOfTableColumnNamesAfterCombination = new ArrayList<>();
                         ArrayList<String> listOfTableColumnValuesAfterCombaintion = new ArrayList<>();
 
+                        String classOfProcedureToBeCalled = "";
+                        //TODO: maybe have a boolean helper variable as well?
+
+                        String[] arrOfParametersAndTypesStrings = null;
+                        String[] arrOfParameters;
+                        String[] arrOfParameterTypes;
+
                         for (int i = 5; i < arrOfStr.length; i+=2) {
-                            String currentTableColumnName = arrOfStr[i];
-                            currentTableColumnName = currentTableColumnName.replace("'", "");
-                            currentTableColumnName = currentTableColumnName.replace("'", "");
+                            if (arrOfStr[i].equals("in")) {
+                                classOfProcedureToBeCalled = arrOfStr[i+1];
 
-                            listOfTableColumnNamesAfterCombination.add(currentTableColumnName);
+                                classOfProcedureToBeCalled = classOfProcedureToBeCalled.replace("'", "");
+                                classOfProcedureToBeCalled = classOfProcedureToBeCalled.replace("'", "");
 
-                            String currentTableColumnValue = arrOfStr[i+1];
-                            currentTableColumnValue = currentTableColumnValue.replace("'", "");
-                            currentTableColumnValue = currentTableColumnValue.replace("'", "");
+                                System.out.println("classOfProcedureToBeCalled is: " + classOfProcedureToBeCalled);
+                            } else if (arrOfStr[i].equals("with") && arrOfStr[i+1].equals("parameters")) {
+                                String stringOfParametersAndTypes = "";
 
-                            listOfTableColumnValuesAfterCombaintion.add(currentTableColumnValue);
+                                for (int j = i+2; j < arrOfStr.length; j++) {
+                                    stringOfParametersAndTypes += arrOfStr[j];
+                                }
+
+                                arrOfParametersAndTypesStrings = stringOfParametersAndTypes.split(",");
+
+                                arrOfParameters = new String[arrOfParametersAndTypesStrings.length];
+                                arrOfParameterTypes = new String[arrOfParametersAndTypesStrings.length];
+
+                                for (int s = 0; s < arrOfParametersAndTypesStrings.length; s++) {
+                                    String[] arrOfSpecificStringOfPAndTStrings = arrOfParametersAndTypesStrings[s].split(":");
+
+                                    arrOfParameters[s] = arrOfSpecificStringOfPAndTStrings[0].replace("[", "");
+                                    arrOfParameterTypes[s] = arrOfSpecificStringOfPAndTStrings[1].replace("]", "");
+                                }
+
+                                System.out.println("Printing out arrOfParameters and arrOfParameterTypes");
+                                for (int p = 0; p < arrOfParameters.length; p++) {
+                                    System.out.println("arrOfParameters at index " + p + " is: " + arrOfParameters[p]);
+                                    System.out.println("arrOfParameterTypes at index " + p + " is: " + arrOfParameterTypes[p]);
+                                }
+
+                                break;
+                            } else {
+                                String currentTableColumnName = arrOfStr[i];
+                                currentTableColumnName = currentTableColumnName.replace("'", "");
+                                currentTableColumnName = currentTableColumnName.replace("'", "");
+
+                                listOfTableColumnNamesAfterCombination.add(currentTableColumnName);
+
+                                String currentTableColumnValue = arrOfStr[i+1];
+                                currentTableColumnValue = currentTableColumnValue.replace("'", "");
+                                currentTableColumnValue = currentTableColumnValue.replace("'", "");
+
+                                listOfTableColumnValuesAfterCombaintion.add(currentTableColumnValue);
+                            }
                         }
 
                         if (isAnInteger(arrOfSecondStringWithoutCOMBINATION[0])) {
