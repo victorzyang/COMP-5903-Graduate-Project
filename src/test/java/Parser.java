@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
+//Below imports are for working with making a procedure call
+//import java.lang.reflect.Method;
+import java.lang.reflect.*;
+import java.awt.*;
+
 public class Parser {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -340,12 +345,13 @@ public class Parser {
                         ArrayList<String> listOfTableColumnNamesAfterCombination = new ArrayList<>();
                         ArrayList<String> listOfTableColumnValuesAfterCombaintion = new ArrayList<>();
 
+                        String procedureToBeCalled = "";
                         String classOfProcedureToBeCalled = "";
                         //TODO: maybe have a boolean helper variable as well?
 
                         String[] arrOfParametersAndTypesStrings = null;
-                        String[] arrOfParameters;
-                        String[] arrOfParameterTypes;
+                        String[] arrOfParameters = null;
+                        String[] arrOfParameterTypes = null;
 
                         for (int i = 5; i < arrOfStr.length; i+=2) {
                             if (arrOfStr[i].equals("in")) {
@@ -393,6 +399,13 @@ public class Parser {
                                 currentTableColumnValue = currentTableColumnValue.replace("'", "");
 
                                 listOfTableColumnValuesAfterCombaintion.add(currentTableColumnValue);
+
+                                if (i+1 != arrOfStr.length - 1) {
+                                    if (arrOfStr[i+2].equals("in")) {
+                                        procedureToBeCalled = currentTableColumnValue;
+                                        System.out.println("procedureToBeCalled is: " + procedureToBeCalled);
+                                    }
+                                }
                             }
                         }
 
@@ -562,6 +575,75 @@ public class Parser {
                                                     listOfTestData.get(n).add("" + listOfTableColumnValuesAfterCombaintion.get(tc));
                                                 } else {
                                                     //TODO: Check that table column value is a function to be called
+
+                                                    if (listOfTableColumnValuesAfterCombaintion.get(tc).equals(procedureToBeCalled)) {
+                                                        //TODO: classOfProcedureToBeCalled, arrOfParameters, arrOfParameterTypes
+
+                                                        Class classToBeCalled = Class.forName(classOfProcedureToBeCalled);
+                                                        Class[] argsClass = new Class[arrOfParameterTypes.length];
+                                                        //Class[] argsClass = new Class[] {int.class, int.class};
+
+                                                        for (int p = 0; p < arrOfParameterTypes.length; p++) {
+                                                            if (arrOfParameterTypes[p].equals("Integer")) {
+                                                                argsClass[p] = int.class;
+                                                            } else if (arrOfParameterTypes[p].equals("String")) {
+                                                                argsClass[p] = String.class;
+                                                            }
+                                                        }
+
+                                                        Object[] argsObject = new Object[arrOfParameters.length];
+
+                                                        for (int p = 0; p < arrOfParameters.length; p++) {
+                                                            //TODO: set_values and get the corresponding names from set_elements
+                                                            boolean parameterIsInSet = false;
+                                                            ArrayList<String> set_elements_selected_arraylist = null;
+
+                                                            for (int se = 0; se < set_elements.size(); se++) {
+                                                                if (set_elements.get(se).contains(arrOfParameters[p])) {
+                                                                    parameterIsInSet = true;
+                                                                    set_elements_selected_arraylist = set_elements.get(se);
+
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if (parameterIsInSet) {
+                                                                //TODO: set_elements_selected_arraylist
+                                                                for (int s = 0; s < set_elements_selected_arraylist.size(); s++) {
+                                                                    if (set_elements_selected_arraylist.get(s).equals(arrOfParameters[p])) {
+                                                                        //TODO: set_values and argsObject[p]
+
+                                                                        argsObject[p] = set_values[s];
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                if (listOfTableColumnNamesAfterCombination.contains(arrOfParameters[p])) {
+                                                                    for (int v = 0; v < listOfTableColumnNamesAfterCombination.size(); v++) {
+                                                                        if (listOfTableColumnNamesAfterCombination.get(v).equals(arrOfParameters[p])) {
+                                                                            argsObject[p] = listOfTableColumnValuesAfterCombaintion.get(v);
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+
+                                                        Constructor constructor = classToBeCalled.getConstructor(argsClass);
+
+                                                        //Object obj = classToBeCalled.getDeclaredConstructor().newInstance();
+                                                        //Object obj = (Object) createObject();
+                                                        Object object = constructor.newInstance(argsObject);
+
+                                                        Method method = classToBeCalled.getDeclaredMethod(procedureToBeCalled, null);
+                                                        String testDataToBeAdded = "" + method.invoke(object, null);
+
+                                                        listOfTestData.get(n).add(testDataToBeAdded);
+
+                                                        /*try{
+                                                            class = Class.forName(classOfProcedureToBeCalled);
+                                                        } catch (ClassNotFoundException e) {
+
+                                                        }*/
+                                                    }
                                                 }
 
                                                 break;
@@ -1963,6 +2045,16 @@ public class Parser {
             System.out.println("An error occurred.");
             e.printStackTrace();
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

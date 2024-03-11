@@ -11,13 +11,13 @@ Feature: Yahtzee scoring
   @CATEGORY 'Score4Twos' 1COMBINATION(4,2) IN 5DICE 'Box' 'TWOS' 'Score' 8
   @CATEGORY 'Score5Sixes' 1COMBINATION(5,6) IN 5DICE 'Box' 'SIXES' 'Score' 30
   @CATEGORY 'Score2Threes' 1COMBINATION(2,3) IN 5DICE 'Box' 'THREES' 'Score' 6
-  @CATEGORY 'Score3ofAKind' 1COMBINATION(3,6) IN 5DICE 'Box' '3OfAKind' 'Score' 'sumOf5Dice' in 'YahtzeeGame' with parameters [D1: Integer, D2: Integer, D3: Integer, D4: Integer, D5: Integer, Box: String]
-  @CATEGORY 'Score4ofAKind' 1COMBINATION(4,4) IN 5DICE 'Box' '4OfAKind' 'Score' 'sumOf5Dice' in 'YahtzeeGame' with parameters [D1: Integer, D2: Integer, D3: Integer, D4: Integer, D5: Integer, Box: String]
+  @CATEGORY 'Score3ofAKind' 1COMBINATION(3,6) IN 5DICE 'Box' '3OfAKind' 'Score' 'scoreSumOfFiveDice' in 'YahtzeeGame' with parameters [D1: Integer, D2: Integer, D3: Integer, D4: Integer, D5: Integer, Box: String]
+  @CATEGORY 'Score4ofAKind' 1COMBINATION(4,4) IN 5DICE 'Box' '4OfAKind' 'Score' 'scoreSumOfFiveDice' in 'YahtzeeGame' with parameters [D1: Integer, D2: Integer, D3: Integer, D4: Integer, D5: Integer, Box: String]
   @CATEGORY 'FullHouse' 2COMBINATION(3,_,2,_) IN 5DICE 'Box' 'FULLHOUSE' 'Score' 25
   @CATEGORY 'SMALLSEQUENCE' 1COMBINATION(a,a+1,a+2,a+3,_) IN 5DICE 'Box' 'SMALLSEQ' 'Score' 30
   @CATEGORY 'LONGSEQUENCE' 1COMBINATION(a,a+1,a+2,a+3,a+4) IN 5DICE 'Box' 'LARGESEQ' 'Score' 40
   @CATEGORY 'Yahtzee' 1COMBINATION(5,3) IN 5DICE 'Box' 'YAHTZEE' 'Score' 50
-  @CATEGORY 'Chance' RANDOM_COMBINATION() IN 5DICE 'Box' 'CHANCE' 'Score' 'sumOf5Dice' in 'YahtzeeGame' with parameters [D1: Integer, D2: Integer, D3: Integer, D4: Integer, D5: Integer, Box: String]
+  @CATEGORY 'Chance' RANDOM_COMBINATION() IN 5DICE 'Box' 'CHANCE' 'Score' 'scoreSumOfFiveDice' in 'YahtzeeGame' with parameters [D1: Integer, D2: Integer, D3: Integer, D4: Integer, D5: Integer, Box: String]
   Scenario Outline: Determine Yahtzee scores
     Given Dice are <D1>, <D2>, <D3>, <D4> and <D5>
     When Category is <Box>
