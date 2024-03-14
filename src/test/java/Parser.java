@@ -424,18 +424,167 @@ public class Parser {
 
                             String[] arrOfSecondStringAfterCOMBINATION = secondStringAfterCOMBINATION.split(",");
 
+                            //TODO: for sequences, check the start of the sequence and the length of the sequence
+
                             for (int i = 0; i < numOfCombinations; i++) {
                                 // i times 2 & i times 2 + 1
 
                                 occurences[i] = Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2]);
                                 //specificCombinationValues[i] = Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]);
-                                specificCombinationValues.add(Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]));
+                                //specificCombinationValues.add(Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]));
 
-                                //TODO: check set
+                                String thirdString = arrOfStr[3];
+                                String fourthString = arrOfStr[4];
 
-                                //TODO: check table and parameter
+                                if (i > 0) {
 
-                                //TODO: take care of '_' cases later
+                                    if (arrOfSecondStringAfterCOMBINATION[i*2+1].equals("_")) {
+
+                                        if (thirdString.equals("IN") && set_names.contains(fourthString)) {
+                                            for (int sn = 0; sn < set_names.size(); sn++) {
+                                                if (set_names.get(sn).equals(fourthString)) {
+
+                                                    boolean randomValueGenerated = false;
+
+                                                    //TODO: have a boolean variable that checks if random generated value satisfies all constraints
+
+                                                    // While a random value has not been generated
+                                                    while (!randomValueGenerated) {
+                                                        // generate a random index less than set_names.get(sn).size()
+                                                        int randomIndex = (int) (Math.random() * (set_elements.get(sn).size()-1)); //it might not be 'set_names'...
+
+                                                        // get the set element from set_elements.get(random_index)
+                                                        String set_element_at_random_index = set_elements.get(sn).get(randomIndex);
+
+                                                        // get the index of where this set element is in 'table_column_values'
+                                                        int table_column_values_index_of_set_element = 0;
+
+                                                        for (int tc = 0; tc < table_column_values.size(); tc++) {
+                                                            if (table_column_values.get(tc).equals(set_element_at_random_index)) {
+                                                                table_column_values_index_of_set_element = tc;
+                                                            }
+                                                        }
+
+                                                        int random_value;
+
+                                                        // check if set element is constrained
+                                                        if (is_table_column_value_constrained[table_column_values_index_of_set_element]) {
+                                                            // if element is constrained, get the constraints
+                                                            int constraint1 = listOfConstraints.get(table_column_values_index_of_set_element)[0];
+                                                            int constraint2 = listOfConstraints.get(table_column_values_index_of_set_element)[1];
+
+                                                            // generate random int between the constraints
+                                                            random_value = (int) ((Math.random() * (constraint2 - constraint1)) + constraint1);
+
+                                                            // check if that generated random int satisfies at least occurences[i] times
+                                                            int numOfConstraintsSatisfied = 0;
+
+                                                            for (int c = 0; c < listOfConstraints.size(); c++) {
+                                                                if (set_elements.get(sn).contains(table_column_values.get(c))) {
+                                                                    if (random_value >= listOfConstraints.get(c)[0] && random_value <= listOfConstraints.get(c)[1]) {
+                                                                        numOfConstraintsSatisfied++;
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            //below condition checks if randomly generated value is already in specificCombinationValues
+
+                                                            // set 'randomValueGenerated' to be true when a random value is generated
+                                                            if (numOfConstraintsSatisfied >= occurences[i] && !specificCombinationValues.contains(random_value)) {
+                                                                specificCombinationValues.add(random_value);
+
+                                                                randomValueGenerated = true;
+                                                            }
+
+                                                        } else {
+
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+                                        }
+
+                                    } else {
+                                        specificCombinationValues.add(Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]));
+                                    }
+
+                                } else {
+
+                                    if (arrOfSecondStringAfterCOMBINATION[i*2+1].equals("_")) {
+                                        if (thirdString.equals("IN") && set_names.contains(fourthString)) {
+                                            for (int sn = 0; sn < set_names.size(); sn++) {
+                                                if (set_names.get(sn).equals(fourthString)) {
+
+                                                    boolean randomValueGenerated = false;
+
+                                                    //TODO: have a boolean variable that checks if random generated value satisfies all constraints
+
+                                                    // While a random value has not been generated
+                                                    while (!randomValueGenerated) {
+                                                        // generate a random index less than set_names.get(sn).size()
+                                                        int randomIndex = (int) (Math.random() * (set_elements.get(sn).size()-1));
+
+                                                        // get the set element from set_elements.get(random_index)
+                                                        String set_element_at_random_index = set_elements.get(sn).get(randomIndex);
+
+                                                        // get the index of where this set element is in 'table_column_values'
+                                                        int table_column_values_index_of_set_element = 0;
+
+                                                        for (int tc = 0; tc < table_column_values.size(); tc++) {
+                                                            if (table_column_values.get(tc).equals(set_element_at_random_index)) {
+                                                                table_column_values_index_of_set_element = tc;
+                                                            }
+                                                        }
+
+                                                        int random_value;
+
+                                                        // check if set element is constrained
+                                                        if (is_table_column_value_constrained[table_column_values_index_of_set_element]) {
+                                                            // if element is constrained, get the constraints
+                                                            int constraint1 = listOfConstraints.get(table_column_values_index_of_set_element)[0];
+                                                            int constraint2 = listOfConstraints.get(table_column_values_index_of_set_element)[1];
+
+                                                            // generate random int between the constraints
+                                                            random_value = (int) ((Math.random() * (constraint2 - constraint1)) + constraint1);
+
+                                                            // check if that generated random int satisfies at least occurences[i] times
+                                                            int numOfConstraintsSatisfied = 0;
+
+                                                            for (int c = 0; c < listOfConstraints.size(); c++) {
+                                                                if (set_elements.get(sn).contains(table_column_values.get(c))) {
+                                                                    if (random_value >= listOfConstraints.get(c)[0] && random_value <= listOfConstraints.get(c)[1]) {
+                                                                        numOfConstraintsSatisfied++;
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            //below condition generates random value and adds to specificCombinationValues
+
+                                                            // set 'randomValueGenerated' to be true when a random value is generated
+                                                            if (numOfConstraintsSatisfied >= occurences[i]) {
+                                                                specificCombinationValues.add(random_value);
+
+                                                                randomValueGenerated = true;
+                                                            }
+
+                                                        } else {
+
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+                                        }
+                                    } else {
+                                        specificCombinationValues.add(Integer.parseInt(arrOfSecondStringAfterCOMBINATION[i*2+1]));
+                                    }
+
+                                }
+
+                                //TODO: check table and parameter (?)
+
                             }
 
                             System.out.println("Printing all elements in occurences");
