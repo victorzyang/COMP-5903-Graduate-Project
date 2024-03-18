@@ -24,3 +24,16 @@ Feature: Yahtzee scoring
     Then Score is <Score>
     Examples:
       | D1 | D2 | D3 | D4 | D5 | Box | Score |
+      | 3 | 4 | 4 | 2 | 5 | FIVES | 5 |
+      | 4 | 5 | 3 | 2 | 4 | FOURS | 8 |
+      | 3 | 1 | 2 | 1 | 1 | ONES | 3 |
+      | 3 | 2 | 2 | 2 | 2 | TWOS | 8 |
+      | 6 | 6 | 6 | 6 | 6 | SIXES | 30 |
+      | 3 | 2 | 3 | 1 | 1 | THREES | 6 |
+      | 6 | 6 | 6 | 5 | 4 | 3OfAKind | 27 |
+      | 4 | 4 | 4 | 3 | 4 | 4OfAKind | 19 |
+      | 5 | 5 | 5 | 2 | 2 | FULLHOUSE | 25 |
+      | 2 | 3 | 4 | 5 | 3 | SMALLSEQ | 30 |
+      | 2 | 3 | 4 | 5 | 6 | LARGESEQ | 40 |
+      | 3 | 3 | 3 | 3 | 3 | YAHTZEE | 50 |
+      | 1 | 2 | 2 | 1 | 4 | CHANCE | 10 |

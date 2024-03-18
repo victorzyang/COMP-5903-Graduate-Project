@@ -1194,6 +1194,8 @@ public class Parser {
 
                     }
 
+                    numOfTestCases++;
+
                     //Have a data structure that keeps track of the number of occurrences of a particular value in combination
 
                     //Have another data structure that keeps track of particular values to be included in combination
