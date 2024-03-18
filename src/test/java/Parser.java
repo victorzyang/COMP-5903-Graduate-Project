@@ -991,9 +991,11 @@ public class Parser {
                                                                 //TODO: set_elements_selected_arraylist
                                                                 for (int s = 0; s < set_elements_selected_arraylist.size(); s++) {
                                                                     if (set_elements_selected_arraylist.get(s).equals(arrOfParameters[p])) {
-                                                                        //TODO: set_values and argsObject[p]
 
-                                                                        argsObject[p] = set_values[s];
+                                                                        if (set_elements_selected_arraylist.equals(set_elements_to_work_with)) {
+                                                                            argsObject[p] = set_values[s];
+                                                                        }
+
                                                                     }
                                                                 }
                                                             } else {
@@ -1034,16 +1036,161 @@ public class Parser {
                                 }
                             }
 
-                            //TODO: Take care of 'SMALLSEQUENCE' and 'LONGSEQUENCE' later...
                         } else {
                             if (arrOfSecondStringWithoutCOMBINATION[0].equals("RANDOM_")) {
                                 //TODO
 
-                                //Split commas in the ...COMBINATION()
+                                String thirdString = arrOfStr[3];
+                                String fourthString = arrOfStr[4];
+
+                                int[] set_values = null;
+                                //boolean[] has_set_value_been_assigned = null;
+
+                                ArrayList<String> set_elements_to_work_with = null;
+
+                                if (thirdString.equals("IN") && set_names.contains(fourthString)) {
+                                    for (int sn = 0; sn < set_names.size(); sn++) {
+                                        if (set_names.get(sn).equals(fourthString)) {
+                                            set_elements_to_work_with = set_elements.get(sn);
+
+                                            set_values = new int[set_elements.get(sn).size()];
+                                            //has_set_value_been_assigned = new boolean[set_elements.get(sn).size()];
+
+                                            for (int se = 0; se < set_elements.get(sn).size(); se++) {
+                                                set_values[se] = 0;
+                                                //has_set_value_been_assigned[se] = false;
+                                            }
+                                        }
+                                    }
+
+                                    for (int sv = 0; sv < set_values.length; sv++) {
+                                        int table_index_of_set_element = 0;
+
+                                        for (int tc = 0; tc < table_column_values.size(); tc++) {
+                                            if (table_column_values.get(tc).equals(set_elements_to_work_with.get(sv))) {
+                                                table_index_of_set_element = tc;
+                                            }
+                                        }
+
+                                        int constraint1;
+                                        int constraint2;
+
+                                        if (is_table_column_value_constrained[table_index_of_set_element]) {
+                                            constraint1 = listOfConstraints.get(table_index_of_set_element)[0];
+                                            constraint2 = listOfConstraints.get(table_index_of_set_element)[1];
+
+                                            int random_set_value = (int) ((Math.random() * (constraint2 - constraint1)) + constraint1);
+
+                                            set_values[sv] = random_set_value;
+                                        }
+                                    }
+
+                                    //TODO: add to listOfTestData (?)
+                                }
+
+                                //TODO: add to listOfTestData
+                                for (int n = 0; n < table_column_values.size(); n++) {
+                                    if (set_elements_to_work_with.contains(table_column_values.get(n))) {
+                                        for (int se = 0; se < set_elements_to_work_with.size(); se++) {
+                                            if (set_elements_to_work_with.get(se).equals(table_column_values.get(n))) {
+                                                listOfTestData.get(n).add("" + set_values[se]);
+
+                                                break;
+                                            }
+                                        }
+                                    } else {
+
+                                        if (is_table_column_value_a_parameter[n]) { //Check that table column value is a parameter
+                                            for (int tc = 0; tc < listOfTableColumnNamesAfterCombination.size(); tc++) {
+                                                if (listOfTableColumnNamesAfterCombination.get(tc).equals(table_column_values.get(n))) {
+                                                    listOfTestData.get(n).add("" + listOfTableColumnValuesAfterCombaintion.get(tc));
+
+                                                    break;
+                                                }
+                                            }
+                                        } else {
+                                            for (int tc = 0; tc < listOfTableColumnNamesAfterCombination.size(); tc++) {
+                                                if (listOfTableColumnNamesAfterCombination.get(tc).equals(table_column_values.get(n))) {
+                                                    if (isAnInteger(listOfTableColumnValuesAfterCombaintion.get(tc))) {
+                                                        listOfTestData.get(n).add("" + listOfTableColumnValuesAfterCombaintion.get(tc));
+                                                    } else {
+                                                        //TODO: Check that table column value is a function to be called
+
+                                                        if (listOfTableColumnValuesAfterCombaintion.get(tc).equals(procedureToBeCalled)) {
+                                                            //TODO: classOfProcedureToBeCalled, arrOfParameters, arrOfParameterTypes
+
+                                                            Class classToBeCalled = Class.forName(classOfProcedureToBeCalled);
+                                                            Class[] argsClass = new Class[arrOfParameterTypes.length];
+                                                            //Class[] argsClass = new Class[] {int.class, int.class};
+
+                                                            for (int p = 0; p < arrOfParameterTypes.length; p++) {
+                                                                if (arrOfParameterTypes[p].equals("Integer")) {
+                                                                    argsClass[p] = int.class;
+                                                                } else if (arrOfParameterTypes[p].equals("String")) {
+                                                                    argsClass[p] = String.class;
+                                                                }
+                                                            }
+
+                                                            Object[] argsObject = new Object[arrOfParameters.length];
+
+                                                            for (int p = 0; p < arrOfParameters.length; p++) {
+                                                                //TODO: set_values and get the corresponding names from set_elements
+                                                                boolean parameterIsInSet = false;
+                                                                ArrayList<String> set_elements_selected_arraylist = null;
+
+                                                                for (int se = 0; se < set_elements.size(); se++) {
+                                                                    if (set_elements.get(se).contains(arrOfParameters[p])) {
+                                                                        parameterIsInSet = true;
+                                                                        set_elements_selected_arraylist = set_elements.get(se);
+
+                                                                        break;
+                                                                    }
+                                                                }
+
+                                                                if (parameterIsInSet) {
+                                                                    //TODO: set_elements_selected_arraylist
+                                                                    for (int s = 0; s < set_elements_selected_arraylist.size(); s++) {
+                                                                        if (set_elements_selected_arraylist.get(s).equals(arrOfParameters[p])) {
+
+                                                                            if (set_elements_selected_arraylist.equals(set_elements_to_work_with)) {
+                                                                                argsObject[p] = set_values[s];
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    if (listOfTableColumnNamesAfterCombination.contains(arrOfParameters[p])) {
+                                                                        for (int v = 0; v < listOfTableColumnNamesAfterCombination.size(); v++) {
+                                                                            if (listOfTableColumnNamesAfterCombination.get(v).equals(arrOfParameters[p])) {
+                                                                                argsObject[p] = listOfTableColumnValuesAfterCombaintion.get(v);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            Constructor constructor = classToBeCalled.getConstructor(argsClass);
+
+                                                            Object object = constructor.newInstance(argsObject);
+
+                                                            Method method = classToBeCalled.getDeclaredMethod(procedureToBeCalled, null);
+                                                            String testDataToBeAdded = "" + method.invoke(object, null);
+
+                                                            listOfTestData.get(n).add(testDataToBeAdded);
+
+                                                        }
+                                                    }
+
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
                             }
                         }
-
-                        //TODO: third string and beyond
 
                     }
 
