@@ -18,6 +18,10 @@ Feature: Yahtzee scoring
   @CATEGORY 'LONGSEQUENCE' 1COMBINATION(a,a+1,a+2,a+3,a+4) IN 5DICE 'Box' 'LARGESEQ' 'Score' 40
   @CATEGORY 'Yahtzee' 1COMBINATION(5,3) IN 5DICE 'Box' 'YAHTZEE' 'Score' 50
   @CATEGORY 'Chance' RANDOM_COMBINATION() IN 5DICE 'Box' 'CHANCE' 'Score' 'scoreSumOfFiveDice' in 'YahtzeeGame' with parameters [D1: Integer, D2: Integer, D3: Integer, D4: Integer, D5: Integer, Box: String]
+  @CATEGORY 'Score0Five' 1COMBINATION(0,5) IN 5DICE 'Box' 'FIVES' 'Score' 0
+  @CATEGORY 'FullHouse' 2COMBINATION(4,_,1,_) IN 5DICE 'Box' 'FULLHOUSE' 'Score' 0
+  @CATEGORY 'LONGSEQUENCE' 1COMBINATION(a,a+1,a+2,a+3,a+3) IN 5DICE 'Box' 'LARGESEQ' 'Score' 0
+  @CATEGORY 'Yahtzee' 2COMBINATION(4,_,1,_) IN 5DICE 'Box' 'YAHTZEE' 'Score' 0
   Scenario Outline: Determine Yahtzee scores
     Given Dice are <D1>, <D2>, <D3>, <D4> and <D5>
     When Category is <Box>
