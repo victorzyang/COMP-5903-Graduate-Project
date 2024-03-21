@@ -591,6 +591,10 @@ public class Parser {
                                                                 sequence_of_ints.add(randomValueForVariable - valueToBeSubtracted);
 
                                                                 set_values_indices.add(s);
+                                                            } else {
+                                                                sequence_of_ints.add(randomValueForVariable);
+
+                                                                set_values_indices.add(s);
                                                             }
                                                         }
                                                     }
